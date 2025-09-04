@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { motion, AnimatePresence } from "framer-motion";
-import { Cookie, X, Shield, Settings, BarChart3, Megaphone, Save } from "lucide-react";
+import { Cookie, Shield, Settings, BarChart3, Megaphone, Save } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCookieConsent, CookiePreferences } from "@/hooks/useCookieConsent";
 
