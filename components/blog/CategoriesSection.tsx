@@ -30,12 +30,7 @@ const staggerContainer = {
   }
 };
 
-const badgeHover = {
-  hover: { 
-    scale: 1.05,
-    transition: { duration: 0.2, ease: "easeOut" }
-  }
-};
+// Removed badgeHover variants - using whileHover directly
 
 export default function CategoriesSection() {
   const { t } = useLanguage();
@@ -82,11 +77,10 @@ export default function CategoriesSection() {
             return (
               <motion.div
                 key={category.name}
-                variants={badgeHover}
-                whileHover="hover"
+                whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
               >
                 <Badge 
                   variant="secondary" 
