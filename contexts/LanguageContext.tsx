@@ -130,6 +130,26 @@ const translations = {
     'signup.jobRoles.qaEngineer': 'Engenheiro QA',
     'signup.jobRoles.techLead': 'Tech Lead',
     'signup.jobRoles.other': 'Outro',
+    
+    // Blog Page
+    'blog.highlights': 'Destaques',
+    'blog.categories': 'Categorias',
+    'blog.categoriesDescription': 'Explore nossos artigos organizados por categoria',
+    'blog.allPosts': 'Todos os Artigos',
+    'blog.allPostsDescription': 'Descubra todos os nossos artigos e tutoriais',
+    'blog.readMore': 'Ler mais',
+    'blog.loadMore': 'Carregar mais artigos',
+    
+    // Newsletter
+    'newsletter.title': 'Receba nossas novidades',
+    'newsletter.description': 'Inscreva-se em nossa newsletter e receba os melhores artigos diretamente no seu e-mail.',
+    'newsletter.emailLabel': 'E-mail',
+    'newsletter.emailPlaceholder': 'Digite seu e-mail',
+    'newsletter.consentLabel': 'Autorizo o recebimento de e-mails',
+    'newsletter.consentDescription': 'Você pode cancelar sua inscrição a qualquer momento.',
+    'newsletter.subscribe': 'Inscrever-se',
+    'newsletter.subscribing': 'Inscrevendo...',
+    'newsletter.privacyNote': 'Respeitamos sua privacidade. Não compartilhamos seus dados com terceiros.',
   },
   en: {
     // Header
@@ -248,6 +268,26 @@ const translations = {
     'signup.jobRoles.qaEngineer': 'QA Engineer',
     'signup.jobRoles.techLead': 'Tech Lead',
     'signup.jobRoles.other': 'Other',
+    
+    // Blog Page
+    'blog.highlights': 'Highlights',
+    'blog.categories': 'Categories',
+    'blog.categoriesDescription': 'Explore our articles organized by category',
+    'blog.allPosts': 'All Articles',
+    'blog.allPostsDescription': 'Discover all our articles and tutorials',
+    'blog.readMore': 'Read more',
+    'blog.loadMore': 'Load more articles',
+    
+    // Newsletter
+    'newsletter.title': 'Get our updates',
+    'newsletter.description': 'Subscribe to our newsletter and receive the best articles directly in your email.',
+    'newsletter.emailLabel': 'Email',
+    'newsletter.emailPlaceholder': 'Enter your email',
+    'newsletter.consentLabel': 'I authorize receiving emails',
+    'newsletter.consentDescription': 'You can unsubscribe at any time.',
+    'newsletter.subscribe': 'Subscribe',
+    'newsletter.subscribing': 'Subscribing...',
+    'newsletter.privacyNote': 'We respect your privacy. We do not share your data with third parties.',
   }
 };
 
