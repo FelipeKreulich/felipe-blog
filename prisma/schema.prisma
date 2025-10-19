@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -12,4 +6,164 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  username  String   @unique
+  bio       String?
+  avatar    String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+  profile  Profile?
+
+  @@map("users")
+}
+
+model Profile {
+  id          String  @id @default(cuid())
+  title       String? //Role the user works
+  company     String?
+  website     String?
+  location    String?
+  socialLinks Json? // Links to social media profiles
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  content     String
+  excerpt     String?
+  coverImage  String?
+  published   Boolean   @default(false)
+  feature     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categories PostCategory[]
+  tags       PostTag[]
+  comments   Comment[]
+  likes      Like[]
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  color       String?
+
+  // Relations
+  posts PostCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  // Relations
+  posts PostTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+  Like     Like[]
+
+  @@map("comments")
+}
+
+model Like {
+  id String @id @default(cuid())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId, commentId])
+  @@map("likes")
+}
+
+// Many-to-Many
+model PostCategory {
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([postId, categoryId])
+  @@map("post_categories")
+}
+
+model PostTag {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+enum Role {
+  USER // Comum User
+  WRITER // Write Posts
+  EDITOR // Edit Posts to another users
+  MODERATOR // Manage Comments
+  ADMIN // Full Access
 }
