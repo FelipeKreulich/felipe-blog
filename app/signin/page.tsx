@@ -10,20 +10,56 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import Waves from "@/components/Waves";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, type SignInInput } from "@/lib/validations/auth";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const { t } = useLanguage();
   useMetaTags();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', { email, password });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
+  });
+
+  const onSubmit = async (data: SignInInput) => {
+    setIsLoading(true);
+    try {
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Erro ao fazer login', {
+          description: 'Email ou senha incorretos',
+        });
+      } else {
+        toast.success('Login realizado com sucesso!');
+        router.push('/blog');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      toast.error('Erro ao fazer login', {
+        description: 'Tente novamente mais tarde',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,7 +104,7 @@ export default function SignIn() {
               </CardHeader>
               
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* Email Field */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -83,13 +119,15 @@ export default function SignIn() {
                       <Input
                         id="email"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...register('email')}
                         placeholder={t('signin.emailPlaceholder')}
                         className="pl-10"
-                        required
+                        disabled={isLoading}
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                    )}
                   </motion.div>
 
                   {/* Password Field */}
@@ -106,16 +144,16 @@ export default function SignIn() {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...register('password')}
                         placeholder={t('signin.passwordPlaceholder')}
                         className="pl-10 pr-10"
-                        required
+                        disabled={isLoading}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        disabled={isLoading}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -124,6 +162,9 @@ export default function SignIn() {
                         )}
                       </button>
                     </div>
+                    {errors.password && (
+                      <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                    )}
                   </motion.div>
 
                   {/* Remember Me & Forgot Password */}
@@ -158,8 +199,15 @@ export default function SignIn() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6, duration: 0.5 }}
                   >
-                    <Button type="submit" className="w-full" size="lg">
-                      {t('signin.loginButton')}
+                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Entrando...
+                        </>
+                      ) : (
+                        t('signin.loginButton')
+                      )}
                     </Button>
                   </motion.div>
 

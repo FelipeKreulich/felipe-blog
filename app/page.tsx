@@ -22,7 +22,7 @@ export default function Home() {
   const [{ width, height, top, left }, measure] = useElementDimensions(ctaRef);
   const gradientX = useMotionValue(0.5);
   const gradientY = useMotionValue(0.5);
-  
+
   const background = useTransform(
     [gradientX, gradientY],
     (values: number[]) =>
@@ -48,9 +48,8 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Header */}
       <Header />
-
       {/* Hero Section */}
-      <motion.section 
+      <motion.section
         className="container mx-auto px-4 py-20"
         initial="initial"
         whileInView="animate"
@@ -61,10 +60,10 @@ export default function Home() {
           <motion.div variants={fadeInUp}>
             <motion.div
               animate={{ y: [0, -8, 0] }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
             >
               <Badge variant="secondary" className="mb-4">
@@ -75,13 +74,13 @@ export default function Home() {
           <motion.h1 className="text-5xl font-bold leading-tight mb-6" variants={fadeInUp}>
             <ShinyText text={t('hero.title')} disabled={false} speed={5} className="" />
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             variants={fadeInUp}
           >
             {t('hero.subtitle')}
           </motion.p>
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center"
             variants={fadeInUp}
           >
@@ -101,7 +100,7 @@ export default function Home() {
       </motion.section>
 
       {/* Features Section */}
-      <motion.section 
+      <motion.section
         className="container mx-auto px-4 py-20"
         initial="initial"
         whileInView="animate"
@@ -116,8 +115,8 @@ export default function Home() {
             {t('features.subtitle')}
           </p>
         </motion.div>
-        
-        <motion.div 
+
+        <motion.div
           className="grid md:grid-cols-3 gap-8"
           variants={staggerContainer}
         >
@@ -128,7 +127,7 @@ export default function Home() {
             >
               <Card className="text-center cursor-pointer h-full">
                 <CardHeader>
-                  <motion.div 
+                  <motion.div
                     className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
@@ -151,7 +150,7 @@ export default function Home() {
             >
               <Card className="text-center cursor-pointer h-full">
                 <CardHeader>
-                  <motion.div 
+                  <motion.div
                     className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
@@ -174,7 +173,7 @@ export default function Home() {
             >
               <Card className="text-center cursor-pointer h-full">
                 <CardHeader>
-                  <motion.div 
+                  <motion.div
                     className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4"
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
@@ -193,40 +192,40 @@ export default function Home() {
       </motion.section>
 
       {/* Stats Section */}
-      <motion.section 
+      <motion.section
         className="container mx-auto px-4 py-20"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
         variants={staggerContainer}
       >
-        <motion.div 
+        <motion.div
           className="bg-card rounded-2xl shadow-lg p-8"
           variants={fadeInUp}
         >
           <div className="grid md:grid-cols-4 gap-8 text-center">
-            <motion.div 
+            <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">100+</div>
               <div className="text-muted-foreground">{t('stats.articles')}</div>
             </motion.div>
-            <motion.div 
+            <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">5K+</div>
               <div className="text-muted-foreground">{t('stats.readers')}</div>
             </motion.div>
-            <motion.div 
+            <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
               <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">50+</div>
               <div className="text-muted-foreground">{t('stats.tutorials')}</div>
             </motion.div>
-            <motion.div 
+            <motion.div
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
@@ -246,14 +245,14 @@ export default function Home() {
       </motion.section>
 
       {/* CTA Section */}
-      <motion.section 
+      <motion.section
         className="container mx-auto px-4 py-20"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true, amount: 0.3 }}
         variants={staggerContainer}
       >
-        <motion.div 
+        <motion.div
           ref={ctaRef}
           className="relative rounded-2xl p-12 text-center text-white overflow-hidden"
           variants={fadeInUp}
@@ -268,22 +267,22 @@ export default function Home() {
         >
           {/* Overlay to maintain text readability */}
           <div className="absolute inset-0 bg-black/20 rounded-2xl" />
-          
+
           {/* Content */}
           <div className="relative z-10">
-            <motion.h2 
+            <motion.h2
               className="text-3xl font-bold mb-4"
               variants={fadeInUp}
             >
               {t('cta.title')}
             </motion.h2>
-            <motion.p 
+            <motion.p
               className="text-xl mb-8 opacity-90"
               variants={fadeInUp}
             >
               {t('cta.subtitle')}
             </motion.p>
-            <motion.div 
+            <motion.div
               className="flex flex-col sm:flex-row gap-4 justify-center"
               variants={fadeInUp}
             >

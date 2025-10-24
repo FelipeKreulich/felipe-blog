@@ -4,47 +4,77 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, User, Briefcase } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
 import Waves from "@/components/Waves";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema, type SignUpInput } from "@/lib/validations/auth";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const { t } = useLanguage();
   useMetaTags();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [jobRole, setJobRole] = useState('');
-  const [otherJobRole, setOtherJobRole] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const finalJobRole = jobRole === 'other' ? otherJobRole : jobRole;
-    // TODO: Implement signup logic
-    console.log('Signup attempt:', { fullName, email, password, jobRole: finalJobRole });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data: SignUpInput) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          username: data.username,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error('Erro ao criar conta', {
+          description: result.error || 'Tente novamente mais tarde',
+        });
+        return;
+      }
+
+      toast.success('Conta criada com sucesso!', {
+        description: 'Você será redirecionado para fazer login',
+      });
+
+      setTimeout(() => {
+        router.push('/signin');
+      }, 1500);
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      toast.error('Erro ao criar conta', {
+        description: 'Tente novamente mais tarde',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const jobRoles = [
-    { value: 'developer', label: t('signup.jobRoles.developer') },
-    { value: 'software-engineer', label: t('signup.jobRoles.softwareEngineer') },
-    { value: 'frontend-developer', label: t('signup.jobRoles.frontendDeveloper') },
-    { value: 'backend-developer', label: t('signup.jobRoles.backendDeveloper') },
-    { value: 'fullstack-developer', label: t('signup.jobRoles.fullstackDeveloper') },
-    { value: 'devops-engineer', label: t('signup.jobRoles.devopsEngineer') },
-    { value: 'data-scientist', label: t('signup.jobRoles.dataScientist') },
-    { value: 'product-manager', label: t('signup.jobRoles.productManager') },
-    { value: 'ui-ux-designer', label: t('signup.jobRoles.uiUxDesigner') },
-    { value: 'qa-engineer', label: t('signup.jobRoles.qaEngineer') },
-    { value: 'tech-lead', label: t('signup.jobRoles.techLead') },
-    { value: 'other', label: t('signup.jobRoles.other') },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -88,35 +118,62 @@ export default function SignUp() {
               </CardHeader>
               
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* Full Name Field */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                   >
-                    <Label htmlFor="fullName" className="text-sm font-medium">
+                    <Label htmlFor="name" className="text-sm font-medium">
                       {t('signup.fullName')}
                     </Label>
                     <div className="relative mt-1">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
-                        id="fullName"
+                        id="name"
                         type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        {...register('name')}
                         placeholder={t('signup.fullNamePlaceholder')}
                         className="pl-10"
-                        required
+                        disabled={isLoading}
                       />
                     </div>
+                    {errors.name && (
+                      <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                    )}
+                  </motion.div>
+
+                  {/* Username Field */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                  >
+                    <Label htmlFor="username" className="text-sm font-medium">
+                      Nome de usuário
+                    </Label>
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="username"
+                        type="text"
+                        {...register('username')}
+                        placeholder="ex: joaosilva"
+                        className="pl-10"
+                        disabled={isLoading}
+                      />
+                    </div>
+                    {errors.username && (
+                      <p className="text-sm text-red-500 mt-1">{errors.username.message}</p>
+                    )}
                   </motion.div>
 
                   {/* Email Field */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
                   >
                     <Label htmlFor="email" className="text-sm font-medium">
                       {t('signup.email')}
@@ -126,20 +183,22 @@ export default function SignUp() {
                       <Input
                         id="email"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...register('email')}
                         placeholder={t('signup.emailPlaceholder')}
                         className="pl-10"
-                        required
+                        disabled={isLoading}
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                    )}
                   </motion.div>
 
                   {/* Password Field */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
+                    transition={{ delay: 0.6, duration: 0.5 }}
                   >
                     <Label htmlFor="password" className="text-sm font-medium">
                       {t('signup.password')}
@@ -149,16 +208,16 @@ export default function SignUp() {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...register('password')}
                         placeholder={t('signup.passwordPlaceholder')}
                         className="pl-10 pr-10"
-                        required
+                        disabled={isLoading}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        disabled={isLoading}
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -167,58 +226,47 @@ export default function SignUp() {
                         )}
                       </button>
                     </div>
+                    {errors.password && (
+                      <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                    )}
                   </motion.div>
 
-                  {/* Job Role Field */}
+                  {/* Confirm Password Field */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6, duration: 0.5 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
                   >
-                    <Label htmlFor="jobRole" className="text-sm font-medium">
-                      {t('signup.jobRole')}
+                    <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                      Confirmar senha
                     </Label>
                     <div className="relative mt-1">
-                      <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                      <Select value={jobRole} onValueChange={setJobRole} required>
-                        <SelectTrigger className="pl-10">
-                          <SelectValue placeholder={t('signup.jobRolePlaceholder')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {jobRoles.map((role) => (
-                            <SelectItem key={role.value} value={role.value}>
-                              {role.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        {...register('confirmPassword')}
+                        placeholder="Digite sua senha novamente"
+                        className="pl-10 pr-10"
+                        disabled={isLoading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        disabled={isLoading}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
                     </div>
+                    {errors.confirmPassword && (
+                      <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
+                    )}
                   </motion.div>
-
-                  {/* Other Job Role Field (conditional) */}
-                  {jobRole === 'other' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7, duration: 0.5 }}
-                    >
-                      <Label htmlFor="otherJobRole" className="text-sm font-medium">
-                        {t('signup.otherJobRole')}
-                      </Label>
-                      <div className="relative mt-1">
-                        <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="otherJobRole"
-                          type="text"
-                          value={otherJobRole}
-                          onChange={(e) => setOtherJobRole(e.target.value)}
-                          placeholder={t('signup.otherJobRolePlaceholder')}
-                          className="pl-10"
-                          required={jobRole === 'other'}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
 
                   {/* Sign Up Button */}
                   <motion.div
@@ -226,8 +274,15 @@ export default function SignUp() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, duration: 0.5 }}
                   >
-                    <Button type="submit" className="w-full" size="lg">
-                      {t('signup.signupButton')}
+                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Criando conta...
+                        </>
+                      ) : (
+                        t('signup.signupButton')
+                      )}
                     </Button>
                   </motion.div>
 
