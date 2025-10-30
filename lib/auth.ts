@@ -1,11 +1,9 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   providers: [
     CredentialsProvider({
@@ -41,17 +39,42 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          username: user.username
+          username: user.username,
+          image: user.avatar
         }
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // Se for um novo login, pegar dados do user
       if (user) {
         token.role = user.role
         token.username = user.username
+        token.picture = user.image
       }
+      // Se NÃO for novo login, sempre buscar dados atualizados do banco
+      else if (token.sub) {
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            name: true,
+            avatar: true,
+            username: true,
+            role: true,
+            email: true
+          }
+        })
+
+        if (updatedUser) {
+          token.name = updatedUser.name
+          token.picture = updatedUser.avatar
+          token.username = updatedUser.username
+          token.role = updatedUser.role
+          token.email = updatedUser.email
+        }
+      }
+
       return token
     },
     async session({ session, token }) {
@@ -59,6 +82,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!
         session.user.role = token.role as string
         session.user.username = token.username as string
+        session.user.image = token.picture as string | null
+        session.user.name = token.name as string
       }
       return session
     }

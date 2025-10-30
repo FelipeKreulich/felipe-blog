@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import HeroSection from "@/components/blog/HeroSection";
 import CategoriesSection from "@/components/blog/CategoriesSection";
 import PostsSection from "@/components/blog/PostsSection";
+import TopWritersSection from "@/components/blog/TopWritersSection";
 import NewsletterSection from "@/components/blog/NewsletterSection";
 import { useMetaTags } from "@/hooks/useMetaTags";
 
@@ -32,6 +33,7 @@ export default function BlogPage() {
       <main>
         <HeroSection />
         <CategoriesSection />
+        <TopWritersSection />
         <PostsSection />
         <NewsletterSection />
       </main>

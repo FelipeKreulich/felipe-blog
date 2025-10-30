@@ -16,10 +16,10 @@ export function ThemeLanguageToggle() {
         variant="ghost"
         size="sm"
         onClick={() => setLanguage(language === 'pt' ? 'en' : 'pt')}
-        className="flex items-center space-x-1"
+        className="flex items-center space-x-1 cursor-pointer"
       >
-        <Globe className="h-4 w-4" />
-        <span className="text-xs font-medium">
+        <Globe className="h-4 w-4 cursor-pointer" />
+        <span className="text-xs font-medium cursor-pointer">
           {language === 'pt' ? 'PT' : 'EN'}
         </span>
       </Button>
@@ -29,12 +29,12 @@ export function ThemeLanguageToggle() {
         variant="ghost"
         size="sm"
         onClick={toggleTheme}
-        className="flex items-center space-x-1"
+        className="flex items-center space-x-1 cursor-pointer"
       >
         {theme === 'light' ? (
-          <Moon className="h-4 w-4" />
+          <Moon className="h-4 w-4 cursor-pointer" />
         ) : (
-          <Sun className="h-4 w-4" />
+          <Sun className="h-4 w-4 cursor-pointer" />
         )}
       </Button>
     </div>

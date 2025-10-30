@@ -48,26 +48,32 @@ model VerificationToken {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String?
-  name      String
-  username  String   @unique
-  bio       String?
-  avatar    String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String?
+  name            String
+  username        String    @unique
+  bio             String?
+  avatar          String?
+  role            Role      @default(USER)
+  isBanned        Boolean   @default(false)
+  bannedUntil     DateTime?
+  banReason       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   // AuthJS
   accounts Account[]
   sessions Session[]
 
   // Relations
-  posts    Post[]
-  comments Comment[]
-  likes    Like[]
-  profile  Profile?
+  posts           Post[]
+  comments        Comment[]
+  likes           Like[]
+  profile         Profile?
+  reports         Report[]
+  bannedBy        UserBan[]        @relation("BannedUsers")
+  bansMade        UserBan[]        @relation("BansMadeByUser")
 
   @@map("users")
 }
@@ -89,16 +95,17 @@ model Profile {
 }
 
 model Post {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
-  slug        String    @unique
-  content     String
+  slug        String     @unique
+  content     String     @db.Text
   excerpt     String?
   coverImage  String?
-  published   Boolean   @default(false)
-  feature     Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  published   Boolean    @default(false)
+  feature     Boolean    @default(false)
+  status      PostStatus @default(DRAFT)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   publishedAt DateTime?
 
   // Relations
@@ -109,6 +116,8 @@ model Post {
   tags       PostTag[]
   comments   Comment[]
   likes      Like[]
+  reports    Report[]
+  views      PostView[]
 }
 
 model Category {
@@ -143,7 +152,7 @@ model Tag {
 
 model Comment {
   id        String   @id @default(cuid())
-  content   String
+  content   String   @db.Text
   approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -158,7 +167,8 @@ model Comment {
   parentId String?
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("CommentReplies")
-  Like     Like[]
+  likes    Like[]
+  reports  Report[]
 
   @@map("comments")
 }
@@ -170,8 +180,8 @@ model Like {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   commentId String?
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
@@ -203,10 +213,108 @@ model PostTag {
   @@map("post_tags")
 }
 
+model Log {
+  id        String   @id @default(cuid())
+  level     LogLevel
+  message   String   @db.Text
+  context   Json?
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@map("logs")
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  reason    String
+  details   String?      @db.Text
+  status    ReportStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Reporter
+  reporterId String
+  reporter   User   @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  // Reported Content
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("reports")
+}
+
+model UserBan {
+  id        String    @id @default(cuid())
+  reason    String
+  permanent Boolean   @default(false)
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  // Banned User
+  userId String
+  user   User   @relation("BannedUsers", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Who banned
+  bannedById String
+  bannedBy   User   @relation("BansMadeByUser", fields: [bannedById], references: [id], onDelete: Cascade)
+
+  @@map("user_bans")
+}
+
+model PostView {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([postId])
+  @@map("post_views")
+}
+
 enum Role {
   USER // Comum User
   WRITER // Write Posts
   EDITOR // Edit Posts to another users
   MODERATOR // Manage Comments
   ADMIN // Full Access
+}
+
+enum PostStatus {
+  DRAFT // Rascunho
+  PENDING_REVIEW // Aguardando revisão
+  PUBLISHED // Publicado
+  ARCHIVED // Arquivado
+}
+
+enum ReportStatus {
+  PENDING // Aguardando análise
+  REVIEWING // Em análise
+  RESOLVED // Resolvido
+  REJECTED // Rejeitado
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+model Newsletter {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  language     String   @default("pt") // pt ou en
+  isActive     Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+
+  @@map("newsletters")
+  @@index([email])
+  @@index([isActive])
 }

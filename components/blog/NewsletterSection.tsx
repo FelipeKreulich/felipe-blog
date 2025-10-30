@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Mail, Send } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useElementDimensions } from "@/hooks/useElementDimensions";
@@ -26,17 +27,19 @@ const staggerContainer = {
 };
 
 export default function NewsletterSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   // Conic gradient effect
   const gradientRef = useRef<HTMLDivElement>(null);
   const [{ width, height, top, left }, measure] = useElementDimensions(gradientRef);
   const gradientX = useMotionValue(0.5);
   const gradientY = useMotionValue(0.5);
-  
+
   const background = useTransform(
     [gradientX, gradientY],
     (values: number[]) =>
@@ -48,13 +51,45 @@ export default function NewsletterSection() {
     if (!email || !isSubscribed) return;
 
     setIsLoading(true);
-    // Simular envio - substitua por sua lógica de API
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    
-    // Reset form
-    setEmail("");
-    setIsSubscribed(false);
+    setSuccess(false);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email,
+          language
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao processar inscrição');
+      }
+
+      // Sucesso
+      setSuccess(true);
+      setError(null);
+
+      // Reset form após 5 segundos
+      setTimeout(() => {
+        setEmail("");
+        setIsSubscribed(false);
+        setSuccess(false);
+      }, 5000);
+
+    } catch (error: any) {
+      console.error('Erro ao inscrever:', error);
+      setError(error.message || (language === 'pt' ? 'Erro ao processar inscrição' : 'Error processing subscription'));
+      setSuccess(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -146,13 +181,18 @@ export default function NewsletterSection() {
                 <motion.div
                   variants={fadeInUp}
                 >
-                  <Button 
-                    type="submit" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    size="lg"
                     className="w-full h-12 text-base font-medium"
-                    disabled={!email || !isSubscribed || isLoading}
+                    disabled={!email || !isSubscribed || isLoading || success}
                   >
-                    {isLoading ? (
+                    {success ? (
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle2 className="h-5 w-5" />
+                        <span>{language === 'pt' ? 'Inscrito!' : 'Subscribed!'}</span>
+                      </div>
+                    ) : isLoading ? (
                       <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         <span>{t('newsletter.subscribing')}</span>
@@ -166,6 +206,38 @@ export default function NewsletterSection() {
                   </Button>
                 </motion.div>
               </form>
+
+              {/* Success Alert */}
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4"
+                >
+                  <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    <AlertDescription className="text-green-800 dark:text-green-200">
+                      {language === 'pt'
+                        ? '✅ Inscrição confirmada! Verifique seu email.'
+                        : '✅ Subscription confirmed! Check your email.'}
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+
+              {/* Error Alert */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4"
+                >
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
 
               <motion.div
                 variants={fadeInUp}

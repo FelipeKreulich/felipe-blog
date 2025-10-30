@@ -1,20 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Code, 
-  Palette, 
-  Database, 
-  Smartphone, 
-  Globe, 
+import {
+  Code,
+  Palette,
+  Database,
+  Smartphone,
+  Globe,
   Zap,
   Shield,
   BarChart3,
   Cpu,
-  Layers
+  Layers,
+  Loader2,
+  Tag
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Category } from "@/types/category";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -30,23 +34,77 @@ const staggerContainer = {
   }
 };
 
-// Removed badgeHover variants - using whileHover directly
+// Mapa de ícones baseado no nome da categoria
+const iconMap: Record<string, any> = {
+  'web': Globe,
+  'desenvolvimento': Globe,
+  'frontend': Code,
+  'backend': Database,
+  'mobile': Smartphone,
+  'design': Palette,
+  'performance': Zap,
+  'seguranca': Shield,
+  'segurança': Shield,
+  'analytics': BarChart3,
+  'devops': Cpu,
+  'arquitetura': Layers,
+  'default': Tag
+};
+
+// Função para obter ícone baseado no nome da categoria
+const getIconForCategory = (categoryName: string) => {
+  const lowerName = categoryName.toLowerCase();
+  for (const key in iconMap) {
+    if (lowerName.includes(key)) {
+      return iconMap[key];
+    }
+  }
+  return iconMap.default;
+};
 
 export default function CategoriesSection() {
   const { t } = useLanguage();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const categories = [
-    { name: "Desenvolvimento Web", icon: Globe, color: "bg-blue-500", count: 12 },
-    { name: "Frontend", icon: Code, color: "bg-green-500", count: 8 },
-    { name: "Backend", icon: Database, color: "bg-purple-500", count: 6 },
-    { name: "Mobile", icon: Smartphone, color: "bg-pink-500", count: 4 },
-    { name: "Design", icon: Palette, color: "bg-orange-500", count: 7 },
-    { name: "Performance", icon: Zap, color: "bg-yellow-500", count: 5 },
-    { name: "Segurança", icon: Shield, color: "bg-red-500", count: 3 },
-    { name: "Analytics", icon: BarChart3, color: "bg-indigo-500", count: 2 },
-    { name: "DevOps", icon: Cpu, color: "bg-teal-500", count: 4 },
-    { name: "Arquitetura", icon: Layers, color: "bg-gray-500", count: 3 }
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/categories');
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar categorias');
+      }
+
+      const data = await response.json();
+      // Exibir todas as categorias (mesmo sem posts)
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Erro ao buscar categorias:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-7xl">
+          <div className="flex justify-center items-center min-h-[200px]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (categories.length === 0) {
+    return null;
+  }
 
   return (
     <motion.section 
@@ -68,26 +126,32 @@ export default function CategoriesSection() {
           </p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="flex flex-wrap justify-center gap-4"
           variants={staggerContainer}
         >
           {categories.map((category, index) => {
-            const IconComponent = category.icon;
+            const IconComponent = getIconForCategory(category.name);
+            const bgColor = category.color || '#3b82f6';
+
             return (
               <motion.div
-                key={category.name}
+                key={category.id}
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
               >
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className="px-4 py-3 text-sm font-medium cursor-pointer group hover:shadow-md transition-all duration-200 bg-card border-2 hover:border-primary/20"
+                  onClick={() => window.location.href = `/blog?category=${category.slug}`}
                 >
                   <div className="flex items-center space-x-2">
-                    <div className={`p-1 rounded-full ${category.color} text-white`}>
+                    <div
+                      className="p-1 rounded-full text-white"
+                      style={{ backgroundColor: bgColor }}
+                    >
                       <IconComponent className="h-4 w-4" />
                     </div>
                     <span className="text-foreground group-hover:text-primary transition-colors">

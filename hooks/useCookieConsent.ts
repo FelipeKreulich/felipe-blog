@@ -81,12 +81,25 @@ export function useCookieConsent() {
   };
 
   const updatePreferences = (preferences: Partial<CookiePreferences>) => {
-    if (typeof window === 'undefined' || !consent) return;
-    
-    const newConsent: CookieConsent = {
-      ...consent,
+    if (typeof window === 'undefined') return;
+
+    // Se não existe consent ainda, criar um novo
+    const currentConsent = consent || {
+      accepted: false,
       preferences: {
-        ...consent.preferences,
+        essential: true,
+        preferences: false,
+        analytics: false,
+        marketing: false,
+      },
+      timestamp: Date.now(),
+    };
+
+    const newConsent: CookieConsent = {
+      ...currentConsent,
+      accepted: true, // Marcar como aceito quando preferências são atualizadas
+      preferences: {
+        ...currentConsent.preferences,
         ...preferences,
       },
       timestamp: Date.now(),
