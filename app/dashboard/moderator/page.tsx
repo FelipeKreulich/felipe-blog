@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Role } from '@prisma/client'
+import { Role } from '@/types/permissions'
 import { CanAccess } from '@/components/auth/CanAccess'
 import { MessageSquare, Flag } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export default function ModeratorDashboard() {
   const [pendingComments, setPendingComments] = useState([])

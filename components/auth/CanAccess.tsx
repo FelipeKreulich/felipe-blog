@@ -1,8 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { Role } from '@prisma/client'
-import { Permission } from '@/types/permissions'
+import { Role, Permission } from '@/types/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface CanAccessProps {

@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Role } from '@prisma/client'
+import { Role } from '@/types/permissions'
 import { CanAccess } from '@/components/auth/CanAccess'
 import { Users, FileText, MessageSquare, Flag, UserX } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 interface Stats {
   overview: {

@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Role } from '@prisma/client'
+import { Role } from '@/types/permissions'
 import { CanAccess } from '@/components/auth/CanAccess'
 import { FileText, Clock } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export default function EditorDashboard() {
   const [pendingPosts, setPendingPosts] = useState([])

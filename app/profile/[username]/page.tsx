@@ -46,7 +46,7 @@ interface UserProfile {
     company: string | null;
     website: string | null;
     location: string | null;
-    socialLinks: any;
+    socialLinks: Record<string, string> | null;
   } | null;
 }
 
@@ -93,6 +93,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username]);
 
   const fetchProfile = async () => {
@@ -159,7 +160,7 @@ export default function ProfilePage() {
   };
 
   const getSocialIcon = (platform: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, React.ComponentType<{ className?: string }>> = {
       'twitter': Twitter,
       'github': Github,
       'linkedin': Linkedin,
@@ -228,7 +229,7 @@ export default function ProfilePage() {
 
                           {/* Badges */}
                           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                            <Badge variant={getRoleBadgeVariant(profile.role) as any}>
+                            <Badge variant={getRoleBadgeVariant(profile.role) as "default" | "destructive" | "outline" | "secondary"}>
                               {getRoleLabel(profile.role)}
                             </Badge>
                             {profile.profile?.title && (

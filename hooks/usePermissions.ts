@@ -1,6 +1,5 @@
 import { useSession } from 'next-auth/react'
-import { Role } from '@prisma/client'
-import { Permission, hasPermission, hasAnyPermission, hasAllPermissions } from '@/types/permissions'
+import { Role, Permission, hasPermission, hasAnyPermission, hasAllPermissions } from '@/types/permissions'
 
 export function usePermissions() {
   const { data: session } = useSession()

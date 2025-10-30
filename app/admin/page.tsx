@@ -160,9 +160,10 @@ export default function AdminDashboard() {
       // Buscar logs (inicialmente)
       await fetchLogs();
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao buscar dados:', error);
-      toast.error(error.message || 'Erro ao carregar dados');
+      const message = error instanceof Error ? error.message : 'Erro ao carregar dados';
+      toast.error(message);
       router.push('/blog');
     } finally {
       setIsLoading(false);
@@ -183,7 +184,7 @@ export default function AdminDashboard() {
       if (!logsResponse.ok) throw new Error('Erro ao buscar logs');
       const logsData = await logsResponse.json();
       setLogs(logsData.logs);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao buscar logs:', error);
       toast.error('Erro ao carregar logs');
     }
@@ -297,8 +298,9 @@ export default function AdminDashboard() {
       setShowCategoryForm(false);
       setCategoryForm({ name: '', slug: '', description: '', color: '#3b82f6' });
       fetchData();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao criar categoria';
+      toast.error(message);
     }
   };
 
@@ -454,7 +456,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {stats.topAuthors.map((author: any, index: number) => (
+                  {stats.topAuthors.map((author: { id: string; name: string; username: string; avatar: string | null; _count: { posts: number } }, index: number) => (
                     <div key={author.id} className="flex items-center gap-4">
                       <div className="font-bold text-muted-foreground w-6">#{index + 1}</div>
                       <Avatar>
@@ -480,7 +482,7 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {stats.topPosts.map((post: any, index: number) => (
+                  {stats.topPosts.map((post: { id: string; title: string; _count: { likes: number; comments: number } }, index: number) => (
                     <div key={post.id} className="flex items-center gap-3">
                       <div className="font-bold text-muted-foreground w-6">#{index + 1}</div>
                       <div className="flex-1">
@@ -628,7 +630,7 @@ export default function AdminDashboard() {
                             <p className="font-medium line-clamp-1">{post.title}</p>
                             {post.categories.length > 0 && (
                               <div className="flex gap-1 mt-1">
-                                {post.categories.slice(0, 2).map(({ category }: any) => (
+                                {post.categories.slice(0, 2).map(({ category }: { category: { id: string; name: string } }) => (
                                   <Badge key={category.id} variant="outline" className="text-xs">
                                     {category.name}
                                   </Badge>

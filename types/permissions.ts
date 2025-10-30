@@ -1,4 +1,12 @@
-import { Role } from '@prisma/client'
+// Local Role enum that mirrors Prisma's Role enum
+// This is needed to avoid build-time issues with Prisma client
+export enum Role {
+  USER = 'USER',
+  WRITER = 'WRITER',
+  EDITOR = 'EDITOR',
+  MODERATOR = 'MODERATOR',
+  ADMIN = 'ADMIN',
+}
 
 export enum Permission {
   // Post Permissions

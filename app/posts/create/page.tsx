@@ -7,6 +7,8 @@ import { CanAccess } from '@/components/auth/CanAccess'
 import { Permission } from '@/types/permissions'
 import { TipTapEditor } from '@/components/editor/TipTapEditor'
 
+export const dynamic = 'force-dynamic'
+
 export default function CreatePostPage() {
   const router = useRouter()
   const { data: session } = useSession()

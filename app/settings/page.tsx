@@ -41,7 +41,7 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
-  const { data: session, status, update } = useSession();
+  const { status, update } = useSession();
   const router = useRouter();
   const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,6 +81,7 @@ export default function SettingsPage() {
     } else if (status === 'authenticated') {
       fetchProfile();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, router]);
 
   const fetchProfile = async () => {
@@ -126,9 +127,10 @@ export default function SettingsPage() {
       setProfile(result);
       await update(); // Atualizar sessão do NextAuth
       toast.success('Perfil atualizado com sucesso!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao atualizar perfil:', error);
-      toast.error(error.message || 'Erro ao atualizar perfil');
+      const message = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
+      toast.error(message);
     }
   };
 
@@ -150,9 +152,10 @@ export default function SettingsPage() {
 
       toast.success('Senha alterada com sucesso!');
       resetPassword();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao alterar senha:', error);
-      toast.error(error.message || 'Erro ao alterar senha');
+      const message = error instanceof Error ? error.message : 'Erro ao alterar senha';
+      toast.error(message);
     }
   };
 
@@ -200,9 +203,10 @@ export default function SettingsPage() {
       await update();
 
       toast.success('Avatar atualizado com sucesso!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao fazer upload:', error);
-      toast.error(error.message || 'Erro ao fazer upload do avatar');
+      const message = error instanceof Error ? error.message : 'Erro ao fazer upload do avatar';
+      toast.error(message);
     } finally {
       setIsUploadingAvatar(false);
       if (fileInputRef.current) {
@@ -231,9 +235,10 @@ export default function SettingsPage() {
       setProfile(prev => prev ? { ...prev, avatar: null } : null);
       await update(); // Atualizar sessão
       toast.success('Avatar removido com sucesso!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao remover avatar:', error);
-      toast.error(error.message || 'Erro ao remover avatar');
+      const message = error instanceof Error ? error.message : 'Erro ao remover avatar';
+      toast.error(message);
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -256,9 +261,10 @@ export default function SettingsPage() {
 
       // Fazer logout e redirecionar
       await signOut({ callbackUrl: '/' });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao excluir conta:', error);
-      toast.error(error.message || 'Erro ao excluir conta');
+      const message = error instanceof Error ? error.message : 'Erro ao excluir conta';
+      toast.error(message);
       setIsDeletingAccount(false);
       setShowDeleteDialog(false);
     }
