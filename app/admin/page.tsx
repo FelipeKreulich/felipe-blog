@@ -193,7 +193,7 @@ export default function AdminDashboard() {
     try {
       setIsDeleting(true);
 
-      const body: any = { deleteAll: clearLogsType === 'all' };
+      const body: { deleteAll: boolean; level?: string } = { deleteAll: clearLogsType === 'all' };
 
       if (clearLogsType === 'filtered') {
         if (logLevel) body.level = logLevel;
@@ -235,7 +235,7 @@ export default function AdminDashboard() {
 
       toast.success('Deletado com sucesso');
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Erro ao deletar');
     } finally {
       setIsDeleting(false);
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
 
       toast.success('Atualizado com sucesso');
       fetchData();
-    } catch (error) {
+    } catch {
       toast.error('Erro ao atualizar');
     }
   };

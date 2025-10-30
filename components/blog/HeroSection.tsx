@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar, User, Heart, MessageCircle, Loader2 } from "lucide-react";
+import { Calendar, User, Heart, MessageCircle, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PostListItem } from "@/types/post";
 import { format } from "date-fns";

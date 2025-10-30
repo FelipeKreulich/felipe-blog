@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Twitter, Linkedin, Github, Globe, Mail } from 'lucide-react'
+import { Twitter, Linkedin, Github, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -22,7 +22,7 @@ interface AuthorBioProps {
   }
   profile?: {
     website?: string | null
-    socialLinks?: any
+    socialLinks?: Record<string, string> | null
   } | null
   otherPosts?: Array<{
     id: string
@@ -58,7 +58,7 @@ const getRoleLabel = (role: string, language: string) => {
 }
 
 export function AuthorBio({ author, profile, otherPosts = [] }: AuthorBioProps) {
-  const { t, language } = useLanguage()
+  const { language } = useLanguage()
 
   const getInitials = (name: string) => {
     return name

@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Send, Loader2, CheckCircle2, AlertCircle, Mail, Users } from 'lucide-react'
 
@@ -32,6 +31,7 @@ export function NewsletterTab({ adminHash }: NewsletterTabProps) {
   useEffect(() => {
     fetchRecentPosts()
     fetchSubscriberStats()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchRecentPosts = async () => {
@@ -95,8 +95,9 @@ export function NewsletterTab({ adminHash }: NewsletterTabProps) {
       alert(`Newsletter enviada! ${data.stats.successCount} emails enviados.`)
       setSelectedPosts([])
       setCustomMessage('')
-    } catch (error: any) {
-      alert(error.message || 'Erro ao enviar newsletter')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao enviar newsletter'
+      alert(message)
     } finally {
       setIsSending(false)
     }

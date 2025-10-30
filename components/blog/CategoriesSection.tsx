@@ -35,7 +35,7 @@ const staggerContainer = {
 };
 
 // Mapa de ícones baseado no nome da categoria
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'web': Globe,
   'desenvolvimento': Globe,
   'frontend': Code,
