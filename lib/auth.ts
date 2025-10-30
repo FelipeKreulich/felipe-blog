@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       // Se for um novo login, pegar dados do user
       if (user) {
         token.role = user.role

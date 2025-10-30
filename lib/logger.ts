@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { LogLevel } from '@/lib/generated/prisma'
 
-type LogContext = Record<string, any>
+type LogContext = Record<string, unknown>
 
 class Logger {
   private async saveLog(
@@ -81,7 +81,7 @@ export function interceptConsole() {
     const originalWarn = console.warn
     const originalInfo = console.info
 
-    console.log = (...args: any[]) => {
+    console.log = (...args: unknown[]) => {
       originalLog(...args)
       const message = args.map(arg =>
         typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
@@ -89,7 +89,7 @@ export function interceptConsole() {
       logger.logSync(LogLevel.INFO, message, undefined, 'console.log')
     }
 
-    console.error = (...args: any[]) => {
+    console.error = (...args: unknown[]) => {
       originalError(...args)
       const message = args.map(arg =>
         typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
@@ -97,7 +97,7 @@ export function interceptConsole() {
       logger.logSync(LogLevel.ERROR, message, undefined, 'console.error')
     }
 
-    console.warn = (...args: any[]) => {
+    console.warn = (...args: unknown[]) => {
       originalWarn(...args)
       const message = args.map(arg =>
         typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
@@ -105,7 +105,7 @@ export function interceptConsole() {
       logger.logSync(LogLevel.WARN, message, undefined, 'console.warn')
     }
 
-    console.info = (...args: any[]) => {
+    console.info = (...args: unknown[]) => {
       originalInfo(...args)
       const message = args.map(arg =>
         typeof arg === 'object' ? JSON.stringify(arg) : String(arg)

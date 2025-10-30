@@ -11,8 +11,6 @@ import {
   Award,
   TrendingUp,
   Heart,
-  MessageCircle,
-  Eye,
   FileText,
   Crown,
   Loader2,
@@ -101,41 +99,6 @@ export default function TopWritersSection() {
       console.error('Erro ao buscar escritores:', error)
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
-  const getMedalIcon = (position: number) => {
-    switch (position) {
-      case 1:
-        return <Crown className="w-6 h-6 text-yellow-500" />
-      case 2:
-        return <Medal className="w-6 h-6 text-gray-400" />
-      case 3:
-        return <Award className="w-6 h-6 text-amber-600" />
-      default:
-        return null
-    }
-  }
-
-  const getMedalBg = (position: number) => {
-    switch (position) {
-      case 1:
-        return 'from-yellow-400 to-yellow-600'
-      case 2:
-        return 'from-gray-300 to-gray-500'
-      case 3:
-        return 'from-amber-400 to-amber-600'
-      default:
-        return 'from-blue-400 to-blue-600'
     }
   }
 

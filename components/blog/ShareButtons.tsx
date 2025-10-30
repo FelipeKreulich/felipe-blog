@@ -15,16 +15,14 @@ import { useLanguage } from '@/contexts/LanguageContext'
 interface ShareButtonsProps {
   url: string
   title: string
-  description?: string
 }
 
-export function ShareButtons({ url, title, description }: ShareButtonsProps) {
+export function ShareButtons({ url, title }: ShareButtonsProps) {
   const { language } = useLanguage()
   const [copied, setCopied] = useState(false)
 
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title)
-  const encodedDescription = encodeURIComponent(description || '')
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
