@@ -59,6 +59,13 @@ model User {
   isBanned        Boolean   @default(false)
   bannedUntil     DateTime?
   banReason       String?
+
+  // Gamification
+  xp              Int       @default(0)
+  level           Int       @default(1)
+  streak          Int       @default(0)
+  lastActiveAt    DateTime?
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -70,10 +77,12 @@ model User {
   posts           Post[]
   comments        Comment[]
   likes           Like[]
+  bookmarks       Bookmark[]
   profile         Profile?
   reports         Report[]
   bannedBy        UserBan[]        @relation("BannedUsers")
   bansMade        UserBan[]        @relation("BansMadeByUser")
+  achievements    UserAchievement[]
 
   @@map("users")
 }
@@ -116,6 +125,7 @@ model Post {
   tags       PostTag[]
   comments   Comment[]
   likes      Like[]
+  bookmarks  Bookmark[]
   reports    Report[]
   views      PostView[]
 }
@@ -275,6 +285,80 @@ model PostView {
 
   @@index([postId])
   @@map("post_views")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  note      String?  @db.Text // Personal note about the bookmark
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@map("bookmarks")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  key         String   @unique // Unique identifier (e.g., "first_post", "10_likes")
+  name        String   // Display name
+  description String
+  icon        String   // Emoji or icon name
+  category    AchievementCategory
+  points      Int      @default(0) // XP reward
+  rarity      AchievementRarity @default(COMMON)
+
+  // Requirements (stored as JSON for flexibility)
+  criteria    Json     // e.g., { "type": "post_count", "count": 10 }
+
+  createdAt   DateTime @default(now())
+
+  // Relations
+  users       UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  unlockedAt    DateTime @default(now())
+  progress      Int      @default(0)
+  notified      Boolean  @default(false) // Whether user was notified
+
+  // Relations
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+enum AchievementCategory {
+  CONTENT      // Creating posts, comments
+  ENGAGEMENT   // Likes, shares, bookmarks
+  SOCIAL       // Follows, interactions
+  MILESTONE    // Time-based, special events
+  SPECIAL      // Rare achievements
+}
+
+enum AchievementRarity {
+  COMMON       // Easy to get
+  UNCOMMON     // Requires some effort
+  RARE         // Requires dedication
+  EPIC         // Very hard to get
+  LEGENDARY    // Extremely rare
 }
 
 enum Role {

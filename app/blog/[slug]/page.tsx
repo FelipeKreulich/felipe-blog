@@ -29,6 +29,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ShareButtons } from '@/components/blog/ShareButtons';
+import { ReportButton } from '@/components/blog/ReportButton';
+import { BookmarkButton } from '@/components/BookmarkButton';
 
 export default function PostPage() {
   const params = useParams();
@@ -365,7 +368,7 @@ export default function PostPage() {
               </div>
 
               {/* Engagement */}
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3 flex-wrap">
                 <Button
                   variant={hasLiked ? "default" : "outline"}
                   size="sm"
@@ -380,6 +383,14 @@ export default function PostPage() {
                   <MessageCircle className="h-4 w-4" />
                   {post._count.comments || 0}
                 </Button>
+
+                {/* Bookmark Button */}
+                <BookmarkButton postId={post.id} size="sm" showText={false} />
+
+                {/* Report Button */}
+                {session && session.user.id !== post.authorId && (
+                  <ReportButton postId={post.id} />
+                )}
               </div>
             </div>
           </div>
@@ -426,6 +437,14 @@ export default function PostPage() {
                 </div>
               </div>
             )}
+
+            {/* Share Buttons */}
+            <div className="mt-8 pt-6 border-t">
+              <ShareButtons
+                url={typeof window !== 'undefined' ? window.location.href : `${process.env.NEXT_PUBLIC_APP_URL || 'https://kreulich-blog.vercel.app'}/blog/${post.slug}`}
+                title={post.title}
+              />
+            </div>
 
             {/* Comments Section */}
             <div className="mt-16 pt-8 border-t">

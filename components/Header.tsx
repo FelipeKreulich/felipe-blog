@@ -1,8 +1,9 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { BookOpen, Menu, X, User, LogOut, Settings, FileText } from "lucide-react";
+import { BookOpen, Menu, X, User, LogOut, Settings, FileText, Bookmark, Trophy } from "lucide-react";
 import { ThemeLanguageToggle } from "@/components/ThemeLanguageToggle";
+import { SearchBar } from "@/components/SearchBar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -131,6 +132,14 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
               <FileText className="mr-2 h-4 w-4" />
               <span>{t('header.myPosts')}</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/bookmarks')}>
+              <Bookmark className="mr-2 h-4 w-4" />
+              <span>Bookmarks</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/achievements')}>
+              <Trophy className="mr-2 h-4 w-4" />
+              <span>Achievements</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/settings')}>
               <Settings className="mr-2 h-4 w-4" />
               <span>{t('header.settings')}</span>
@@ -194,6 +203,9 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
             className="md:hidden absolute top-full left-0 right-0 bg-background border-t border-border shadow-lg z-50"
           >
             <div className="container mx-auto px-4 py-4 space-y-4">
+              {/* Search Bar for Mobile */}
+              <SearchBar className="w-full" />
+
               <div className="flex justify-center mb-4">
                 <ThemeLanguageToggle />
               </div>
@@ -240,6 +252,28 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     {t('header.myPosts')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      router.push('/bookmarks');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <Bookmark className="mr-2 h-4 w-4" />
+                    Bookmarks
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      router.push('/achievements');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <Trophy className="mr-2 h-4 w-4" />
+                    Achievements
                   </Button>
                   <Button
                     variant="ghost"
@@ -295,11 +329,19 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
   );
 
   const HeaderContent = () => (
-    <nav className="flex items-center justify-between relative">
-      <Logo />
-      <DesktopNav />
-      <MobileMenuButton />
-      <MobileMenu />
+    <nav className="flex flex-col gap-4">
+      {/* Top Row: Logo and Navigation */}
+      <div className="flex items-center justify-between relative">
+        <Logo />
+        <DesktopNav />
+        <MobileMenuButton />
+        <MobileMenu />
+      </div>
+
+      {/* Search Bar */}
+      <div className="hidden md:block">
+        <SearchBar className="mx-auto" />
+      </div>
     </nav>
   );
 

@@ -55,7 +55,9 @@ import {
   Shield,
   AlertTriangle,
   Terminal,
-  Mail
+  Mail,
+  Ban,
+  UserX
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -82,6 +84,16 @@ export default function AdminDashboard() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ type: string; id: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Ban states
+  const [banDialogOpen, setBanDialogOpen] = useState(false);
+  const [userToBan, setUserToBan] = useState<{ id: string; name: string } | null>(null);
+  const [banForm, setBanForm] = useState({
+    reason: '',
+    permanent: false,
+    days: 7
+  });
+  const [isBanning, setIsBanning] = useState(false);
 
   // Category form
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -276,6 +288,63 @@ export default function AdminDashboard() {
       fetchData();
     } catch (error) {
       toast.error('Erro ao atualizar role');
+    }
+  };
+
+  const handleBanUser = async () => {
+    if (!userToBan) return;
+
+    if (!banForm.reason.trim()) {
+      toast.error('O motivo do banimento é obrigatório');
+      return;
+    }
+
+    try {
+      setIsBanning(true);
+      const response = await fetch(`/api/admin/users/${userToBan.id}/ban`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(banForm)
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erro ao banir usuário');
+      }
+
+      const data = await response.json();
+      toast.success(data.message);
+      setBanDialogOpen(false);
+      setUserToBan(null);
+      setBanForm({ reason: '', permanent: false, days: 7 });
+      fetchData();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao banir usuário';
+      toast.error(message);
+    } finally {
+      setIsBanning(false);
+    }
+  };
+
+  const handleUnbanUser = async (userId: string, userName: string) => {
+    if (!confirm(`Deseja realmente desbanir ${userName}?`)) return;
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/ban`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erro ao desbanir usuário');
+      }
+
+      const data = await response.json();
+      toast.success(data.message);
+      fetchData();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao desbanir usuário';
+      toast.error(message);
     }
   };
 
@@ -522,6 +591,7 @@ export default function AdminDashboard() {
                   <TableRow>
                     <TableHead>Usuário</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Posts</TableHead>
                     <TableHead>Criado em</TableHead>
@@ -537,7 +607,7 @@ export default function AdminDashboard() {
                       user.username.toLowerCase().includes(searchTerm.toLowerCase())
                     )
                     .map((user) => (
-                      <TableRow key={user.id}>
+                      <TableRow key={user.id} className={user.isBanned ? 'bg-red-50 dark:bg-red-950/20' : ''}>
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar>
@@ -552,9 +622,30 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
+                          {user.isBanned ? (
+                            <div className="flex flex-col gap-1">
+                              <Badge variant="destructive" className="w-fit">
+                                <UserX className="h-3 w-3 mr-1" />
+                                Banido
+                              </Badge>
+                              {user.bannedUntil && (
+                                <span className="text-xs text-muted-foreground">
+                                  Até {formatDate(user.bannedUntil)}
+                                </span>
+                              )}
+                              {!user.bannedUntil && (
+                                <span className="text-xs text-red-600 font-medium">Permanente</span>
+                              )}
+                            </div>
+                          ) : (
+                            <Badge variant="secondary">Ativo</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
                           <Select
                             value={user.role}
                             onValueChange={(role) => handleChangeUserRole(user.id, role)}
+                            disabled={user.isBanned}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
@@ -571,16 +662,41 @@ export default function AdminDashboard() {
                         <TableCell>{user._count.posts}</TableCell>
                         <TableCell>{formatDate(user.createdAt)}</TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setItemToDelete({ type: 'users', id: user.id });
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
+                          <div className="flex justify-end gap-1">
+                            {user.isBanned ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUnbanUser(user.id, user.name)}
+                                title="Desbanir usuário"
+                              >
+                                <Shield className="h-4 w-4 text-green-600" />
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setUserToBan({ id: user.id, name: user.name });
+                                  setBanDialogOpen(true);
+                                }}
+                                disabled={user.role === 'ADMIN'}
+                                title={user.role === 'ADMIN' ? 'Não pode banir admin' : 'Banir usuário'}
+                              >
+                                <Ban className="h-4 w-4 text-orange-600" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setItemToDelete({ type: 'users', id: user.id });
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1019,6 +1135,121 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 'Limpar Logs'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Ban User Dialog */}
+      <AlertDialog open={banDialogOpen} onOpenChange={setBanDialogOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Ban className="h-5 w-5 text-orange-600" />
+              Banir Usuário
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {userToBan && `Você está prestes a banir ${userToBan.name}. Configure os detalhes abaixo.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Tipo de ban */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tipo de Banimento</label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={!banForm.permanent ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setBanForm({ ...banForm, permanent: false })}
+                >
+                  Temporário
+                </Button>
+                <Button
+                  type="button"
+                  variant={banForm.permanent ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => setBanForm({ ...banForm, permanent: true })}
+                >
+                  Permanente
+                </Button>
+              </div>
+            </div>
+
+            {/* Duração (se temporário) */}
+            {!banForm.permanent && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Duração (dias)</label>
+                <Select
+                  value={banForm.days.toString()}
+                  onValueChange={(value) => setBanForm({ ...banForm, days: parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 dia</SelectItem>
+                    <SelectItem value="3">3 dias</SelectItem>
+                    <SelectItem value="7">7 dias</SelectItem>
+                    <SelectItem value="14">14 dias</SelectItem>
+                    <SelectItem value="30">30 dias</SelectItem>
+                    <SelectItem value="90">90 dias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Motivo */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Motivo *</label>
+              <textarea
+                value={banForm.reason}
+                onChange={(e) => setBanForm({ ...banForm, reason: e.target.value })}
+                placeholder="Descreva o motivo do banimento..."
+                className="w-full min-h-[100px] px-3 py-2 text-sm border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+
+            {banForm.permanent && (
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-md p-3">
+                <p className="text-sm text-red-800 dark:text-red-200 font-medium">
+                  ⚠️ Atenção: Banimento permanente
+                </p>
+                <p className="text-xs text-red-600 dark:text-red-300 mt-1">
+                  O usuário será banido permanentemente e só poderá ser desbanido manualmente por um administrador.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isBanning}
+              onClick={() => {
+                setBanForm({ reason: '', permanent: false, days: 7 });
+                setUserToBan(null);
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBanUser}
+              disabled={isBanning || !banForm.reason.trim()}
+              className="bg-orange-600 hover:bg-orange-700"
+            >
+              {isBanning ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Banindo...
+                </>
+              ) : (
+                <>
+                  <Ban className="mr-2 h-4 w-4" />
+                  {banForm.permanent ? 'Banir Permanentemente' : `Banir por ${banForm.days} dias`}
+                </>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
