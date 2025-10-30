@@ -2,12 +2,10 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, Heart, MessageCircle } from 'lucide-react'
+import { Heart, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { motion } from 'framer-motion'
-import { format } from 'date-fns'
-import { ptBR, enUS } from 'date-fns/locale'
 import { calculateReadingTime } from '@/lib/utils/readingTime'
 
 interface RelatedPost {
@@ -38,15 +36,9 @@ interface RelatedPostsProps {
 }
 
 export function RelatedPosts({ posts, title }: RelatedPostsProps) {
-  const { t, language } = useLanguage()
+  const { language } = useLanguage()
 
   if (posts.length === 0) return null
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return ''
-    const locale = language === 'pt' ? ptBR : enUS
-    return format(new Date(date), 'dd MMM yyyy', { locale })
-  }
 
   return (
     <section className="my-12">

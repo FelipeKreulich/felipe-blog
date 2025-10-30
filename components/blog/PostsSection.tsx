@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Calendar, User, ArrowRight, Loader2, Heart, MessageCircle } from "lucide-react";
+import { Calendar, User, ArrowRight, Loader2, Heart, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { PostListItem, PostsResponse } from "@/types/post";
 import { format } from "date-fns";
@@ -24,14 +24,6 @@ const staggerContainer = {
     }
   }
 };
-
-// Função para calcular tempo de leitura baseado no conteúdo
-function calculateReadTime(content: string): string {
-  const wordsPerMinute = 200;
-  const words = content.trim().split(/\s+/).length;
-  const minutes = Math.ceil(words / wordsPerMinute);
-  return `${minutes} min`;
-}
 
 export default function PostsSection() {
   const { t, language } = useLanguage();

@@ -83,9 +83,10 @@ export default function NewsletterSection() {
         setSuccess(false);
       }, 5000);
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro ao inscrever:', error);
-      setError(error.message || (language === 'pt' ? 'Erro ao processar inscrição' : 'Error processing subscription'));
+      const message = error instanceof Error ? error.message : (language === 'pt' ? 'Erro ao processar inscrição' : 'Error processing subscription');
+      setError(message);
       setSuccess(false);
     } finally {
       setIsLoading(false);

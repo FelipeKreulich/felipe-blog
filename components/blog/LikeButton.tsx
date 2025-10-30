@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Heart } from 'lucide-react'
 
@@ -17,13 +17,7 @@ export function LikeButton({ postId, commentId, initialLikes = 0, className = ''
   const [likes, setLikes] = useState(initialLikes)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (session) {
-      checkIfLiked()
-    }
-  }, [session, postId, commentId])
-
-  async function checkIfLiked() {
+  const checkIfLiked = useCallback(async () => {
     try {
       const params = new URLSearchParams()
       if (postId) params.append('postId', postId)
@@ -35,7 +29,13 @@ export function LikeButton({ postId, commentId, initialLikes = 0, className = ''
     } catch (error) {
       console.error('Erro ao verificar curtida:', error)
     }
-  }
+  }, [postId, commentId])
+
+  useEffect(() => {
+    if (session) {
+      checkIfLiked()
+    }
+  }, [session, checkIfLiked])
 
   async function handleLike() {
     if (!session) {
