@@ -24,44 +24,66 @@ import {
   Minus,
   FileCode,
   Underline as UnderlineIcon,
+  Table as TableIcon,
+  Youtube as YoutubeIcon,
+  Twitter as TwitterIcon,
+  Images as ImagesIcon,
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { useCallback } from 'react'
+import { useState } from 'react'
+import { LinkDialog } from './dialogs/LinkDialog'
+import { ImageDialog } from './dialogs/ImageDialog'
+import { YouTubeDialog } from './dialogs/YouTubeDialog'
+import { TwitterDialog } from './dialogs/TwitterDialog'
 
 interface EditorToolbarProps {
   editor: Editor
 }
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
-  const setLink = useCallback(() => {
-    const previousUrl = editor.getAttributes('link').href
-    const url = window.prompt('URL:', previousUrl)
-
-    // Cancelado
-    if (url === null) {
-      return
-    }
-
-    // Vazio
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
-
-    // Definir link
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
-  }, [editor])
-
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL da imagem:')
-
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false)
+  const [imageDialogOpen, setImageDialogOpen] = useState(false)
+  const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false)
+  const [twitterDialogOpen, setTwitterDialogOpen] = useState(false)
 
   if (!editor) {
     return null
+  }
+
+  const handleLinkSubmit = (url: string, text?: string) => {
+    if (text) {
+      editor.chain().focus().insertContent({
+        type: 'text',
+        text,
+        marks: [{ type: 'link', attrs: { href: url } }],
+      }).run()
+    } else {
+      editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    }
+  }
+
+  const handleImageSubmit = (url: string) => {
+    editor.chain().focus().setImage({ src: url }).run()
+  }
+
+  const handleGallerySubmit = (urls: string[]) => {
+    editor.chain().focus().setImageGallery({ images: urls }).run()
+  }
+
+  const handleYoutubeSubmit = (url: string, width?: number, height?: number) => {
+    editor.chain().focus().setYoutubeVideo({
+      src: url,
+      width: width || 640,
+      height: height || 480,
+    }).run()
+  }
+
+  const handleTwitterSubmit = (url: string) => {
+    editor.chain().focus().setTwitterEmbed({ url }).run()
+  }
+
+  const insertTable = () => {
+    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
   }
 
   return (
@@ -72,7 +94,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         size="sm"
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().undo()}
-        title="Desfazer"
+        title="Desfazer (Ctrl+Z)"
       >
         <Undo className="h-4 w-4" />
       </Button>
@@ -81,7 +103,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         size="sm"
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().redo()}
-        title="Refazer"
+        title="Refazer (Ctrl+Y)"
       >
         <Redo className="h-4 w-4" />
       </Button>
@@ -95,7 +117,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         onClick={() => editor.chain().focus().toggleBold().run()}
         data-active={editor.isActive('bold')}
         className="data-[active=true]:bg-muted"
-        title="Negrito"
+        title="Negrito (Ctrl+B)"
       >
         <Bold className="h-4 w-4" />
       </Button>
@@ -105,7 +127,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         onClick={() => editor.chain().focus().toggleItalic().run()}
         data-active={editor.isActive('italic')}
         className="data-[active=true]:bg-muted"
-        title="Itálico"
+        title="Itálico (Ctrl+I)"
       >
         <Italic className="h-4 w-4" />
       </Button>
@@ -115,7 +137,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         onClick={() => editor.chain().focus().toggleUnderline().run()}
         data-active={editor.isActive('underline')}
         className="data-[active=true]:bg-muted"
-        title="Sublinhado"
+        title="Sublinhado (Ctrl+U)"
       >
         <UnderlineIcon className="h-4 w-4" />
       </Button>
@@ -183,7 +205,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         data-active={editor.isActive('bulletList')}
         className="data-[active=true]:bg-muted"
-        title="Lista"
+        title="Lista com marcadores"
       >
         <List className="h-4 w-4" />
       </Button>
@@ -280,7 +302,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       <Button
         variant="ghost"
         size="sm"
-        onClick={setLink}
+        onClick={() => setLinkDialogOpen(true)}
         data-active={editor.isActive('link')}
         className="data-[active=true]:bg-muted"
         title="Inserir link"
@@ -290,11 +312,63 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       <Button
         variant="ghost"
         size="sm"
-        onClick={addImage}
-        title="Inserir imagem"
+        onClick={() => setImageDialogOpen(true)}
+        title="Inserir imagem ou galeria"
       >
         <ImageIcon className="h-4 w-4" />
       </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={insertTable}
+        data-active={editor.isActive('table')}
+        className="data-[active=true]:bg-muted"
+        title="Inserir tabela"
+      >
+        <TableIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setYoutubeDialogOpen(true)}
+        title="Inserir vídeo do YouTube"
+      >
+        <YoutubeIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setTwitterDialogOpen(true)}
+        title="Inserir tweet"
+      >
+        <TwitterIcon className="h-4 w-4" />
+      </Button>
+
+      {/* Dialogs */}
+      <LinkDialog
+        open={linkDialogOpen}
+        onOpenChange={setLinkDialogOpen}
+        onSubmit={handleLinkSubmit}
+      />
+
+      <ImageDialog
+        open={imageDialogOpen}
+        onOpenChange={setImageDialogOpen}
+        onSubmit={handleImageSubmit}
+        onGallerySubmit={handleGallerySubmit}
+      />
+
+      <YouTubeDialog
+        open={youtubeDialogOpen}
+        onOpenChange={setYoutubeDialogOpen}
+        onSubmit={handleYoutubeSubmit}
+      />
+
+      <TwitterDialog
+        open={twitterDialogOpen}
+        onOpenChange={setTwitterDialogOpen}
+        onSubmit={handleTwitterSubmit}
+      />
     </div>
   )
 }

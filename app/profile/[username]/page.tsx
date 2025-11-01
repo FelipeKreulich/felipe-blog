@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AuthorAnalyticsDashboard } from '@/components/analytics/AuthorAnalyticsDashboard';
 import {
   Loader2,
   Settings,
@@ -28,7 +29,8 @@ import {
   Globe,
   Mail,
   ArrowLeft,
-  Users
+  Users,
+  BarChart3
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -98,6 +100,10 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('posts');
 
   const isOwnProfile = session?.user?.username === username;
+
+  // Verifica se o usuário pode ver analytics (WRITER ou superior)
+  const canViewAnalytics = isOwnProfile && profile &&
+    ['WRITER', 'EDITOR', 'MODERATOR', 'ADMIN'].includes(profile.role);
 
   useEffect(() => {
     fetchProfile();
@@ -404,6 +410,12 @@ export default function ProfilePage() {
             <TabsList className="mb-6">
               <TabsTrigger value="posts">{t('profile.tabs.posts')}</TabsTrigger>
               <TabsTrigger value="about">{t('profile.tabs.about')}</TabsTrigger>
+              {canViewAnalytics && (
+                <TabsTrigger value="analytics">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Analytics
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* Posts Tab */}
@@ -529,6 +541,13 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Analytics Tab */}
+            {canViewAnalytics && (
+              <TabsContent value="analytics">
+                <AuthorAnalyticsDashboard userId={profile.id} />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </main>

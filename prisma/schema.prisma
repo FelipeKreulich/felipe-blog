@@ -77,6 +77,7 @@ model User {
   posts           Post[]
   comments        Comment[]
   likes           Like[]
+  reactions       Reaction[]
   bookmarks       Bookmark[]
   profile         Profile?
   reports         Report[]
@@ -129,6 +130,7 @@ model Post {
   tags       PostTag[]
   comments   Comment[]
   likes      Like[]
+  reactions  Reaction[]
   bookmarks  Bookmark[]
   reports    Report[]
   views      PostView[]
@@ -182,6 +184,7 @@ model Comment {
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("CommentReplies")
   likes    Like[]
+  reactions Reaction[]
   reports  Report[]
 
   @@map("comments")
@@ -204,6 +207,30 @@ model Like {
 
   @@unique([userId, postId, commentId])
   @@map("likes")
+}
+
+model Reaction {
+  id String @id @default(cuid())
+
+  // Tipo de reação (emoji)
+  type ReactionType
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId, commentId, type])
+  @@index([postId])
+  @@index([commentId])
+  @@map("reactions")
 }
 
 // Many-to-Many
@@ -394,11 +421,22 @@ enum LogLevel {
   ERROR
 }
 
+enum ReactionType {
+  LIKE      // ❤️ Love/Like
+  FIRE      // 🔥 Fire/Hot
+  CLAP      // 👏 Applause
+  THINKING  // 🤔 Thinking
+  CELEBRATE // 🎉 Celebrate
+  INSIGHTFUL // 💡 Insightful/Lightbulb
+}
+
 enum NotificationType {
   COMMENT          // Someone commented on your post
   REPLY            // Someone replied to your comment
   LIKE_POST        // Someone liked your post
   LIKE_COMMENT     // Someone liked your comment
+  REACTION_POST    // Someone reacted to your post
+  REACTION_COMMENT // Someone reacted to your comment
   ACHIEVEMENT      // You unlocked an achievement
   FOLLOW           // Someone followed you (future)
   MENTION          // Someone mentioned you (future)

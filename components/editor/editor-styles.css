@@ -12,6 +12,13 @@
   height: 0;
 }
 
+/* Hard Break - corrige problema de espaçamento com Enter */
+.ProseMirror br {
+  display: block;
+  content: "";
+  margin: 0.5em 0;
+}
+
 /* Headings */
 .ProseMirror h1 {
   font-size: 2.25rem;
@@ -42,6 +49,15 @@
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
   line-height: 1.75;
+  min-height: 1em;
+}
+
+.ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
 }
 
 /* Lists */
@@ -109,6 +125,16 @@
   font-size: 0.875rem;
 }
 
+.ProseMirror .code-block-lowlight {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* Horizontal Rule */
 .ProseMirror hr {
   border: none;
@@ -137,6 +163,103 @@
   margin-bottom: 1rem;
 }
 
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid hsl(var(--primary));
+}
+
+/* Tables */
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  min-width: 1em;
+  border: 2px solid hsl(var(--border));
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ProseMirror table th {
+  font-weight: 600;
+  text-align: left;
+  background-color: hsl(var(--muted));
+}
+
+.ProseMirror table .selectedCell {
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.ProseMirror table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: hsl(var(--primary));
+  pointer-events: none;
+}
+
+.ProseMirror table p {
+  margin: 0;
+}
+
+/* YouTube Embed */
+.ProseMirror iframe[data-youtube-video] {
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  margin: 1.5rem auto;
+  display: block;
+  border-radius: 0.5rem;
+}
+
+.ProseMirror div[data-youtube-video] {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+/* Twitter Embed */
+.ProseMirror .twitter-embed-wrapper {
+  margin: 1.5rem 0;
+}
+
+.ProseMirror div[data-twitter-embed] {
+  margin: 1.5rem auto;
+  max-width: 550px;
+}
+
+/* Image Gallery */
+.ProseMirror .image-gallery-wrapper {
+  margin: 1.5rem 0;
+}
+
+.ProseMirror .image-gallery {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.ProseMirror .image-gallery img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin: 0;
+  border: 1px solid hsl(var(--border));
+  transition: transform 0.2s ease-in-out;
+}
+
+.ProseMirror .image-gallery img:hover {
+  transform: scale(1.02);
+}
+
 /* Selection */
 .ProseMirror ::selection {
   background-color: hsl(var(--primary) / 0.2);
@@ -159,7 +282,7 @@
   text-align: justify;
 }
 
-/* Syntax Highlighting for Code Blocks */
+/* Syntax Highlighting for Code Blocks - VS Code Dark+ Theme */
 .ProseMirror .hljs-comment,
 .ProseMirror .hljs-quote {
   color: #6a9955;
@@ -168,12 +291,14 @@
 
 .ProseMirror .hljs-keyword,
 .ProseMirror .hljs-selector-tag,
-.ProseMirror .hljs-literal {
+.ProseMirror .hljs-literal,
+.ProseMirror .hljs-doctag {
   color: #569cd6;
 }
 
 .ProseMirror .hljs-string,
-.ProseMirror .hljs-attr {
+.ProseMirror .hljs-attr,
+.ProseMirror .hljs-template-variable {
   color: #ce9178;
 }
 
@@ -192,10 +317,71 @@
 }
 
 .ProseMirror .hljs-variable,
-.ProseMirror .hljs-type {
-  color: #4fc1ff;
+.ProseMirror .hljs-type,
+.ProseMirror .hljs-params {
+  color: #9cdcfe;
 }
 
 .ProseMirror .hljs-meta {
   color: #d4d4d4;
+}
+
+.ProseMirror .hljs-tag {
+  color: #569cd6;
+}
+
+.ProseMirror .hljs-name {
+  color: #4fc1ff;
+}
+
+.ProseMirror .hljs-attribute {
+  color: #9cdcfe;
+}
+
+.ProseMirror .hljs-regexp,
+.ProseMirror .hljs-link {
+  color: #d16969;
+}
+
+.ProseMirror .hljs-symbol,
+.ProseMirror .hljs-bullet {
+  color: #4ec9b0;
+}
+
+.ProseMirror .hljs-section {
+  color: #dcdcaa;
+  font-weight: bold;
+}
+
+.ProseMirror .hljs-class .hljs-title {
+  color: #4ec9b0;
+}
+
+.ProseMirror .hljs-deletion {
+  color: #d16969;
+  background-color: rgba(209, 105, 105, 0.1);
+}
+
+.ProseMirror .hljs-addition {
+  color: #6a9955;
+  background-color: rgba(106, 153, 85, 0.1);
+}
+
+.ProseMirror .hljs-emphasis {
+  font-style: italic;
+}
+
+.ProseMirror .hljs-strong {
+  font-weight: bold;
+}
+
+/* Melhorias de dark mode */
+@media (prefers-color-scheme: dark) {
+  .ProseMirror pre {
+    background-color: #1e1e1e;
+  }
+
+  .ProseMirror table th {
+    background-color: hsl(var(--muted));
+  }
 }

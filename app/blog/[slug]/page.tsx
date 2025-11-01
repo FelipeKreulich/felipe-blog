@@ -32,6 +32,8 @@ import Image from 'next/image';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { ReportButton } from '@/components/blog/ReportButton';
 import { BookmarkButton } from '@/components/BookmarkButton';
+import { SafeHtml } from '@/components/SafeHtml';
+import { ReactionButton } from '@/components/reactions/ReactionButton';
 
 export default function PostPage() {
   const params = useParams();
@@ -243,6 +245,23 @@ export default function PostPage() {
     fetchPost();
   }, [slug]);
 
+  // Registra visualização do post
+  useEffect(() => {
+    if (post?.id) {
+      const trackView = async () => {
+        try {
+          await fetch(`/api/posts/${post.id}/view`, {
+            method: 'POST',
+          });
+        } catch (error) {
+          console.error('Erro ao registrar visualização:', error);
+        }
+      };
+
+      trackView();
+    }
+  }, [post?.id]);
+
   useEffect(() => {
     if (post?.id) {
       fetchComments();
@@ -392,6 +411,11 @@ export default function PostPage() {
                   <ReportButton postId={post.id} />
                 )}
               </div>
+
+              {/* Reactions */}
+              <div className="mt-4">
+                <ReactionButton postId={post.id} />
+              </div>
             </div>
           </div>
         </div>
@@ -417,7 +441,7 @@ export default function PostPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
             <article className="prose prose-lg dark:prose-invert max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <SafeHtml html={post.content} />
             </article>
 
             {/* Tags */}

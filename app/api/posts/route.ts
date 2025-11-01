@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/permissions'
 import { Permission } from '@/types/permissions'
+import { sanitizeHtml, sanitizeText, extractPlainText } from '@/lib/sanitize'
 
 export async function GET(req: NextRequest) {
   try {
@@ -136,6 +137,11 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Sanitizar conteúdo HTML
+    const sanitizedContent = sanitizeHtml(content)
+    const sanitizedTitle = sanitizeText(title)
+    const sanitizedExcerpt = excerpt ? sanitizeText(excerpt) : extractPlainText(sanitizedContent, 160)
+
     // Gerar slug único
     const baseSlug = title
       .toLowerCase()
@@ -160,10 +166,10 @@ export async function POST(req: NextRequest) {
 
     const post = await prisma.post.create({
       data: {
-        title,
+        title: sanitizedTitle,
         slug,
-        content,
-        excerpt: excerpt || content.substring(0, 160),
+        content: sanitizedContent,
+        excerpt: sanitizedExcerpt,
         coverImage,
         status,
         published: false,

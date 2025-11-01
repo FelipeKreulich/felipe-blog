@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { canEditPost } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
+import { sanitizeHtml, sanitizeText, extractPlainText } from '@/lib/sanitize'
 
 // PATCH - Editar post
 export async function PATCH(
@@ -20,6 +21,18 @@ export async function PATCH(
 
     const { title, content, excerpt, coverImage, categoryIds, tagIds } = await req.json()
 
+    // Sanitizar dados de entrada
+    const sanitizedTitle = title ? sanitizeText(title) : undefined
+    const sanitizedContent = content ? sanitizeHtml(content) : undefined
+    const sanitizedExcerpt = excerpt !== undefined
+      ? (excerpt ? sanitizeText(excerpt) : null)
+      : undefined
+
+    // Se excerpt não foi fornecido mas content foi, gerar automaticamente
+    const finalExcerpt = sanitizedExcerpt !== undefined
+      ? sanitizedExcerpt
+      : (sanitizedContent ? extractPlainText(sanitizedContent, 160) : undefined)
+
     // Buscar post atual para verificar se slug precisa ser atualizado
     const currentPost = await prisma.post.findUnique({
       where: { id },
@@ -29,8 +42,8 @@ export async function PATCH(
     let slug = currentPost?.slug
 
     // Se o título mudou, gerar novo slug
-    if (title && title !== currentPost?.title) {
-      const baseSlug = title
+    if (sanitizedTitle && sanitizedTitle !== currentPost?.title) {
+      const baseSlug = sanitizedTitle
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -50,10 +63,10 @@ export async function PATCH(
     const post = await prisma.post.update({
       where: { id },
       data: {
-        ...(title && { title }),
+        ...(sanitizedTitle && { title: sanitizedTitle }),
         ...(slug !== currentPost?.slug && { slug }),
-        ...(content && { content }),
-        ...(excerpt !== undefined && { excerpt }),
+        ...(sanitizedContent && { content: sanitizedContent }),
+        ...(finalExcerpt !== undefined && { excerpt: finalExcerpt }),
         ...(coverImage !== undefined && { coverImage }),
         ...(categoryIds && {
           categories: {
