@@ -11,11 +11,31 @@ import { Trophy, Lock, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { RARITY_COLORS, RARITY_TEXT_COLORS } from '@/lib/gamification/achievements'
 
+interface Achievement {
+  id: string
+  key: string
+  name: string
+  description: string
+  icon: string
+  category: string
+  points: number
+  rarity: string
+  criteria: any
+  createdAt: Date
+}
+
+interface UserAchievement {
+  id: string
+  userId: string
+  achievementId: string
+  unlockedAt: Date
+}
+
 export default function AchievementsPage() {
   const { data: session } = useSession()
   const { language } = useLanguage()
-  const [achievements, setAchievements] = useState<any[]>([])
-  const [userAchievements, setUserAchievements] = useState<any[]>([])
+  const [achievements, setAchievements] = useState<Achievement[]>([])
+  const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -57,7 +77,7 @@ export default function AchievementsPage() {
     if (!acc[ach.category]) acc[ach.category] = []
     acc[ach.category].push(ach)
     return acc
-  }, {} as Record<string, any[]>)
+  }, {} as Record<string, Achievement[]>)
 
   if (loading) {
     return (

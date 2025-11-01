@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Menu, X, User, LogOut, Settings, FileText, Bookmark, Trophy } from "lucide-react";
 import { ThemeLanguageToggle } from "@/components/ThemeLanguageToggle";
 import { SearchBar } from "@/components/SearchBar";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -99,6 +100,7 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
   const DesktopNav = () => (
     <div className="hidden md:flex items-center space-x-4">
       <ThemeLanguageToggle />
+      {session && <NotificationDropdown />}
 
         {status === 'loading' ? (
           <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />

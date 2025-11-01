@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { notifyPostLike } from '@/lib/notifications'
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,9 +25,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Verificar se o post existe
+    // Verificar se o post existe e buscar informações
     const post = await prisma.post.findUnique({
-      where: { id: postId }
+      where: { id: postId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
     })
 
     if (!post) {
@@ -63,6 +72,20 @@ export async function POST(req: NextRequest) {
           commentId: null
         }
       })
+
+      // Criar notificação
+      try {
+        await notifyPostLike({
+          postId: post.id,
+          postTitle: post.title,
+          postSlug: post.slug,
+          postAuthorId: post.authorId,
+          likerUserId: session.user.id,
+          likerName: session.user.name || 'Usuário',
+        })
+      } catch (notifError) {
+        console.error('Erro ao criar notificação de like:', notifError)
+      }
 
       return NextResponse.json({ liked: true })
     }

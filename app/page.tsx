@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Users, Calendar, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Calendar, Star, Coffee } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -299,6 +299,50 @@ export default function Home() {
               </motion.div>
             </motion.div>
           </div>
+        </motion.div>
+      </motion.section>
+
+      {/* Buy Me a Coffee Section */}
+      <motion.section
+        className="container mx-auto px-4 py-20"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={staggerContainer}
+      >
+        <motion.div
+          className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 rounded-2xl p-12 text-center border border-orange-100 dark:border-orange-900"
+          variants={fadeInUp}
+        >
+          <motion.div
+            className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <Coffee className="h-8 w-8 text-white" />
+          </motion.div>
+          <motion.h2
+            className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100"
+            variants={fadeInUp}
+          >
+            {t('support.title')}
+          </motion.h2>
+          <motion.p
+            className="text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto"
+            variants={fadeInUp}
+          >
+            {t('support.subtitle')}
+          </motion.p>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg"
+              onClick={() => window.open('https://buymeacoffee.com/felipekreulich', '_blank')}
+            >
+              <Coffee className="mr-2 h-5 w-5" />
+              {t('support.button')}
+            </Button>
+          </motion.div>
         </motion.div>
       </motion.section>
 

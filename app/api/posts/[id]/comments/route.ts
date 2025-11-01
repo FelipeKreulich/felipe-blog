@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { notifyNewComment, notifyCommentReply } from '@/lib/notifications'
 
 // GET - Listar comentários de um post
 export async function GET(
@@ -82,9 +83,17 @@ export async function POST(
       )
     }
 
-    // Verificar se o post existe
+    // Verificar se o post existe e buscar informações para notificação
     const post = await prisma.post.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
     })
 
     if (!post) {
@@ -95,9 +104,18 @@ export async function POST(
     }
 
     // Se for uma resposta, verificar se o comentário pai existe
+    let parentComment = null
     if (parentId) {
-      const parentComment = await prisma.comment.findUnique({
-        where: { id: parentId }
+      parentComment = await prisma.comment.findUnique({
+        where: { id: parentId },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        }
       })
 
       if (!parentComment) {
@@ -128,6 +146,34 @@ export async function POST(
         }
       }
     })
+
+    // Criar notificação
+    try {
+      if (parentComment) {
+        // É uma resposta - notificar autor do comentário pai
+        await notifyCommentReply({
+          commentId: parentComment.id,
+          postTitle: post.title,
+          postSlug: post.slug,
+          commentAuthorId: parentComment.authorId,
+          replierUserId: session.user.id,
+          replierName: session.user.name || 'Usuário',
+        })
+      } else {
+        // É um comentário novo - notificar autor do post
+        await notifyNewComment({
+          postId: post.id,
+          postTitle: post.title,
+          postSlug: post.slug,
+          postAuthorId: post.authorId,
+          commenterUserId: session.user.id,
+          commenterName: session.user.name || 'Usuário',
+        })
+      }
+    } catch (notifError) {
+      // Não falhar a requisição se a notificação falhar
+      console.error('Erro ao criar notificação:', notifError)
+    }
 
     return NextResponse.json({ comment }, { status: 201 })
   } catch (error) {

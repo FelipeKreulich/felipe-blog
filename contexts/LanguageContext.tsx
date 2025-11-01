@@ -51,7 +51,49 @@ const translations = {
     'cta.subtitle': 'Junte-se à comunidade e tenha acesso a conteúdo exclusivo',
     'cta.signupButton': 'Criar Conta Gratuita',
     'cta.exploreButton': 'Explorar Blog',
-    
+
+    // Buy Me a Coffee Section
+    'support.title': 'Apoie este projeto',
+    'support.subtitle': 'Se você gosta do conteúdo e quer ajudar a mantê-lo ativo, considere me apoiar',
+    'support.button': 'Me pague um café',
+
+    // Notifications
+    'notifications.title': 'Notificações',
+    'notifications.empty': 'Nenhuma notificação',
+    'notifications.emptyDescription': 'Você não tem notificações no momento',
+    'notifications.markAllRead': 'Marcar todas como lidas',
+    'notifications.seeAll': 'Ver todas',
+    'notifications.new': 'Nova',
+    'notifications.timeAgo.now': 'Agora',
+    'notifications.timeAgo.minutes': 'min atrás',
+    'notifications.timeAgo.hours': 'h atrás',
+    'notifications.timeAgo.days': 'd atrás',
+    'notifications.types.comment': 'comentou no seu post',
+    'notifications.types.reply': 'respondeu ao seu comentário',
+    'notifications.types.likePost': 'curtiu seu post',
+    'notifications.types.likeComment': 'curtiu seu comentário',
+    'notifications.types.achievement': 'Conquista desbloqueada!',
+    'notifications.types.follow': 'começou a seguir você',
+    'notifications.types.mention': 'mencionou você',
+    'notifications.types.postApproved': 'Seu post foi aprovado',
+    'notifications.types.postRejected': 'Seu post foi rejeitado',
+
+    // Follow System
+    'follow.follow': 'Seguir',
+    'follow.following': 'Seguindo',
+    'follow.unfollow': 'Deixar de seguir',
+    'follow.followers': 'Seguidores',
+    'follow.followersCount': '{count} seguidores',
+    'follow.followingCount': '{count} seguindo',
+    'follow.noFollowers': 'Nenhum seguidor',
+    'follow.noFollowing': 'Não está seguindo ninguém',
+    'follow.followersTitle': 'Seguidores',
+    'follow.followingTitle': 'Seguindo',
+    'follow.feed': 'Feed Personalizado',
+    'follow.feedEmpty': 'Seu feed está vazio',
+    'follow.feedEmptyDescription': 'Comece seguindo autores para ver posts aqui',
+    'follow.exploreAuthors': 'Explorar Autores',
+
     // Footer
     'footer.copyright': 'Todos os direitos reservados.',
     
@@ -434,7 +476,49 @@ const translations = {
     'cta.subtitle': 'Join the community and get access to exclusive content',
     'cta.signupButton': 'Create Free Account',
     'cta.exploreButton': 'Explore Blog',
-    
+
+    // Buy Me a Coffee Section
+    'support.title': 'Support this project',
+    'support.subtitle': 'If you enjoy the content and want to help keep it active, consider supporting me',
+    'support.button': 'Buy me a coffee',
+
+    // Notifications
+    'notifications.title': 'Notifications',
+    'notifications.empty': 'No notifications',
+    'notifications.emptyDescription': 'You have no notifications at the moment',
+    'notifications.markAllRead': 'Mark all as read',
+    'notifications.seeAll': 'See all',
+    'notifications.new': 'New',
+    'notifications.timeAgo.now': 'Now',
+    'notifications.timeAgo.minutes': 'min ago',
+    'notifications.timeAgo.hours': 'h ago',
+    'notifications.timeAgo.days': 'd ago',
+    'notifications.types.comment': 'commented on your post',
+    'notifications.types.reply': 'replied to your comment',
+    'notifications.types.likePost': 'liked your post',
+    'notifications.types.likeComment': 'liked your comment',
+    'notifications.types.achievement': 'Achievement unlocked!',
+    'notifications.types.follow': 'started following you',
+    'notifications.types.mention': 'mentioned you',
+    'notifications.types.postApproved': 'Your post was approved',
+    'notifications.types.postRejected': 'Your post was rejected',
+
+    // Follow System
+    'follow.follow': 'Follow',
+    'follow.following': 'Following',
+    'follow.unfollow': 'Unfollow',
+    'follow.followers': 'Followers',
+    'follow.followersCount': '{count} followers',
+    'follow.followingCount': '{count} following',
+    'follow.noFollowers': 'No followers',
+    'follow.noFollowing': 'Not following anyone',
+    'follow.followersTitle': 'Followers',
+    'follow.followingTitle': 'Following',
+    'follow.feed': 'Personalized Feed',
+    'follow.feedEmpty': 'Your feed is empty',
+    'follow.feedEmptyDescription': 'Start following authors to see posts here',
+    'follow.exploreAuthors': 'Explore Authors',
+
     // Footer
     'footer.copyright': 'All rights reserved.',
     

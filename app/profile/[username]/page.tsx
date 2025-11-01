@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { FollowButton } from '@/components/FollowButton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +27,8 @@ import {
   Linkedin,
   Globe,
   Mail,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -76,6 +78,11 @@ interface Stats {
   likes: number;
 }
 
+interface FollowStats {
+  followers: number;
+  following: number;
+}
+
 export default function ProfilePage() {
   const params = useParams();
   const username = params.username as string;
@@ -86,6 +93,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [stats, setStats] = useState<Stats>({ posts: 0, comments: 0, likes: 0 });
+  const [followStats, setFollowStats] = useState<FollowStats>({ followers: 0, following: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts');
 
@@ -114,12 +122,37 @@ export default function ProfilePage() {
       setProfile(data.user);
       setPosts(data.posts);
       setStats(data.stats);
+
+      // Buscar estatísticas de follow
+      if (data.user?.id) {
+        fetchFollowStats(data.user.id);
+      }
     } catch (error) {
       console.error('Erro ao buscar perfil:', error);
       toast.error(t('profile.error'));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchFollowStats = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/follow/stats?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFollowStats(data);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar stats de follow:', error);
+    }
+  };
+
+  const handleFollowChange = (isFollowing: boolean) => {
+    // Atualizar contador de seguidores
+    setFollowStats(prev => ({
+      ...prev,
+      followers: isFollowing ? prev.followers + 1 : prev.followers - 1
+    }));
   };
 
   const getInitials = (name: string) => {
@@ -241,12 +274,17 @@ export default function ProfilePage() {
                           </div>
                         </div>
 
-                        {/* Edit Button */}
-                        {isOwnProfile && (
+                        {/* Edit Button / Follow Button */}
+                        {isOwnProfile ? (
                           <Button onClick={() => router.push('/settings')}>
                             <Settings className="mr-2 h-4 w-4" />
                             {t('profile.editProfile')}
                           </Button>
+                        ) : (
+                          <FollowButton
+                            userId={profile.id}
+                            onFollowChange={handleFollowChange}
+                          />
                         )}
                       </div>
 
@@ -254,6 +292,22 @@ export default function ProfilePage() {
                       {profile.bio && (
                         <p className="text-muted-foreground mb-4">{profile.bio}</p>
                       )}
+
+                      {/* Follow Stats */}
+                      <div className="flex gap-4 text-sm mb-4 justify-center md:justify-start">
+                        <button className="hover:underline">
+                          <span className="font-semibold">{followStats.followers}</span>{' '}
+                          <span className="text-muted-foreground">
+                            {t('follow.followers')}
+                          </span>
+                        </button>
+                        <button className="hover:underline">
+                          <span className="font-semibold">{followStats.following}</span>{' '}
+                          <span className="text-muted-foreground">
+                            {t('follow.followingCount').replace('{count}', String(followStats.following))}
+                          </span>
+                        </button>
+                      </div>
 
                       {/* Meta Info */}
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center md:justify-start">
