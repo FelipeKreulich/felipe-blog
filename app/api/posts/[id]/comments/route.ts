@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notifyNewComment, notifyCommentReply } from '@/lib/notifications'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 // GET - Listar comentários de um post
 export async function GET(
@@ -174,6 +175,9 @@ export async function POST(
       // Não falhar a requisição se a notificação falhar
       console.error('Erro ao criar notificação:', notifError)
     }
+
+    // Check achievements for the commenter
+    checkAchievements(session.user.id, 'comment_created').catch(() => {})
 
     return NextResponse.json({ comment }, { status: 201 })
   } catch (error) {

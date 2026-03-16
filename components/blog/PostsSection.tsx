@@ -10,6 +10,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { PostListItem, PostsResponse } from "@/types/post";
 import { format } from "date-fns";
 import { ptBR, enUS } from "date-fns/locale";
+import Link from "next/link";
+import Image from "next/image";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -94,14 +96,14 @@ export default function PostsSection() {
   }
 
   return (
-    <motion.section 
+    <motion.section
       className="py-16 px-4"
       initial="initial"
       animate="animate"
       variants={staggerContainer}
     >
       <div className="container mx-auto max-w-7xl">
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           variants={fadeInUp}
         >
@@ -129,81 +131,87 @@ export default function PostsSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.3, ease: "easeOut" }}
               >
-                <Card className="overflow-hidden group cursor-pointer h-full">
-                  {/* Cover Image ou Gradient */}
-                  <div
-                    className="relative h-48"
-                    style={{
-                      background: post.coverImage
-                        ? `url(${post.coverImage}) center/cover`
-                        : `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)`
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
+                <Link href={`/blog/${post.slug}`}>
+                  <Card className="overflow-hidden group cursor-pointer h-full">
+                    {/* Cover Image ou Gradient */}
+                    <div className="relative h-48 overflow-hidden">
+                      {post.coverImage ? (
+                        <Image
+                          src={post.coverImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      ) : (
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)`
+                          }}
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
 
-                    {/* Category Badge */}
-                    {firstCategory && (
-                      <div className="absolute top-4 left-4">
-                        <Badge
-                          variant="secondary"
-                          className="bg-white/90 text-gray-900"
-                        >
-                          {firstCategory.name}
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-
-                  <CardContent className="p-6 flex flex-col">
-                    <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3 flex-grow">
-                      {post.excerpt || t('blog.noDescription')}
-                    </p>
-
-                    <div className="space-y-3">
-                      {/* Author and Stats */}
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <User className="h-4 w-4" />
-                          <span className="truncate">{post.author.name}</span>
+                      {/* Category Badge */}
+                      {firstCategory && (
+                        <div className="absolute top-4 left-4 z-10">
+                          <Badge
+                            variant="secondary"
+                            className="bg-white/90 text-gray-900"
+                          >
+                            {firstCategory.name}
+                          </Badge>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          {post._count && (
-                            <>
-                              <div className="flex items-center space-x-1">
-                                <Heart className="h-4 w-4" />
-                                <span>{post._count.likes}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <MessageCircle className="h-4 w-4" />
-                                <span>{post._count.comments}</span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Date and Read More */}
-                      <div className="flex items-center justify-between pt-3 border-t">
-                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(post.publishedAt)}</span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-primary hover:text-primary/80"
-                          onClick={() => window.location.href = `/blog/${post.slug}`}
-                        >
-                          {t('blog.readMore')}
-                          <ArrowRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
+
+                    <CardContent className="p-6 flex flex-col">
+                      <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-4 leading-relaxed line-clamp-3 flex-grow">
+                        {post.excerpt || t('blog.noDescription')}
+                      </p>
+
+                      <div className="space-y-3">
+                        {/* Author and Stats */}
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center space-x-1">
+                            <User className="h-4 w-4" />
+                            <span className="truncate">{post.author.name}</span>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            {post._count && (
+                              <>
+                                <div className="flex items-center space-x-1">
+                                  <Heart className="h-4 w-4" />
+                                  <span>{post._count.likes}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <MessageCircle className="h-4 w-4" />
+                                  <span>{post._count.comments}</span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Date and Read More */}
+                        <div className="flex items-center justify-between pt-3 border-t">
+                          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            <span>{formatDate(post.publishedAt)}</span>
+                          </div>
+                          <span className="text-primary text-sm font-medium flex items-center">
+                            {t('blog.readMore')}
+                            <ArrowRight className="h-4 w-4 ml-1" />
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               </motion.div>
             );
           })}

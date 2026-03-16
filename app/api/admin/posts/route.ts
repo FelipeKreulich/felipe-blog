@@ -5,9 +5,8 @@ import { validateAdminAccess } from '@/lib/admin'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },

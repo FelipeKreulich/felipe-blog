@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 /**
  * GET /api/search
@@ -18,6 +19,16 @@ import { prisma } from '@/lib/prisma'
  */
 export async function GET(req: NextRequest) {
   try {
+    // Rate limit: 30 searches per IP per minute
+    const ip = getClientIp(req)
+    const rl = rateLimit(`search:${ip}`, { limit: 30, windowSeconds: 60 })
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Muitas requisições. Tente novamente em breve.' },
+        { status: 429 }
+      )
+    }
+
     const { searchParams } = new URL(req.url)
 
     const query = searchParams.get('q') || ''

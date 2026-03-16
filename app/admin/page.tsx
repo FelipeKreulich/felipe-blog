@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -66,8 +66,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { NewsletterTab } from '@/components/admin/NewsletterTab';
 
 export default function AdminDashboard() {
-  const searchParams = useSearchParams();
-  const hash = searchParams.get('hash');
   const { data: session, status } = useSession();
   const router = useRouter();
   const { t, language } = useLanguage();
@@ -114,12 +112,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (!hash) {
-      toast.error('Hash não fornecida');
-      router.push('/blog');
-      return;
-    }
-
     if (status === 'unauthenticated') {
       router.push('/signin');
       return;
@@ -132,11 +124,11 @@ export default function AdminDashboard() {
     }
 
     fetchData();
-  }, [status, session, hash]);
+  }, [status, session]);
 
   // Buscar logs quando filtros mudarem
   useEffect(() => {
-    if (activeTab === 'logs' && hash) {
+    if (activeTab === 'logs') {
       fetchLogs();
     }
   }, [logLevel, logSearch, activeTab]);
@@ -146,25 +138,25 @@ export default function AdminDashboard() {
       setIsLoading(true);
 
       // Buscar stats
-      const statsResponse = await fetch(`/api/admin/stats?hash=${hash}`);
+      const statsResponse = await fetch(`/api/admin/stats`);
       if (!statsResponse.ok) throw new Error('Erro ao buscar estatísticas');
       const statsData = await statsResponse.json();
       setStats(statsData);
 
       // Buscar users
-      const usersResponse = await fetch(`/api/admin/users?hash=${hash}&pageSize=100`);
+      const usersResponse = await fetch(`/api/admin/users&pageSize=100`);
       if (!usersResponse.ok) throw new Error('Erro ao buscar usuários');
       const usersData = await usersResponse.json();
       setUsers(usersData.users);
 
       // Buscar posts
-      const postsResponse = await fetch(`/api/admin/posts?hash=${hash}&pageSize=100`);
+      const postsResponse = await fetch(`/api/admin/posts&pageSize=100`);
       if (!postsResponse.ok) throw new Error('Erro ao buscar posts');
       const postsData = await postsResponse.json();
       setPosts(postsData.posts);
 
       // Buscar categories
-      const categoriesResponse = await fetch(`/api/admin/categories?hash=${hash}`);
+      const categoriesResponse = await fetch(`/api/admin/categories`);
       if (!categoriesResponse.ok) throw new Error('Erro ao buscar categorias');
       const categoriesData = await categoriesResponse.json();
       setCategories(categoriesData.categories);
@@ -185,7 +177,6 @@ export default function AdminDashboard() {
   const fetchLogs = async () => {
     try {
       const params = new URLSearchParams({
-        hash: hash || '',
         pageSize: '100'
       });
 
@@ -212,7 +203,7 @@ export default function AdminDashboard() {
         if (logLevel) body.level = logLevel;
       }
 
-      const response = await fetch(`/api/admin/logs?hash=${hash}`, {
+      const response = await fetch(`/api/admin/logs`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -236,7 +227,7 @@ export default function AdminDashboard() {
 
     try {
       setIsDeleting(true);
-      const endpoint = `/api/admin/${itemToDelete.type}/${itemToDelete.id}?hash=${hash}`;
+      const endpoint = `/api/admin/${itemToDelete.type}/${itemToDelete.id}`;
 
       const response = await fetch(endpoint, {
         method: 'DELETE'
@@ -259,7 +250,7 @@ export default function AdminDashboard() {
 
   const handleTogglePost = async (postId: string, action: string) => {
     try {
-      const response = await fetch(`/api/admin/posts/${postId}?hash=${hash}`, {
+      const response = await fetch(`/api/admin/posts/${postId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action })
@@ -276,7 +267,7 @@ export default function AdminDashboard() {
 
   const handleChangeUserRole = async (userId: string, role: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}?hash=${hash}`, {
+      const response = await fetch(`/api/admin/users/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role })
@@ -352,7 +343,7 @@ export default function AdminDashboard() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/api/admin/categories?hash=${hash}`, {
+      const response = await fetch(`/api/admin/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryForm)
@@ -1065,11 +1056,10 @@ export default function AdminDashboard() {
         )}
 
         {/* Newsletter Tab */}
-        {activeTab === 'newsletter' && hash && (
+        {activeTab === 'newsletter' && (
           <div className="space-y-6">
-            {/* Dynamic import para evitar carregar componente pesado */}
             {typeof window !== 'undefined' && (
-              <NewsletterTab adminHash={hash} />
+              <NewsletterTab />
             )}
           </div>
         )}

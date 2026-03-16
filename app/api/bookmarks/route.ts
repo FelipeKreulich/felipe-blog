@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 /**
  * GET /api/bookmarks
@@ -159,6 +160,9 @@ export async function POST(req: NextRequest) {
         }
       }
     })
+
+    // Check achievements for the user
+    checkAchievements(user.id, 'bookmark_created').catch(() => {})
 
     return NextResponse.json({ bookmark }, { status: 201 })
   } catch (error) {

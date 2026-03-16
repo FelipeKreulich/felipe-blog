@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notifyPostLike } from '@/lib/notifications'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Criar notificação
+      // Criar notificação e verificar achievements
       try {
         await notifyPostLike({
           postId: post.id,
@@ -86,6 +87,9 @@ export async function POST(req: NextRequest) {
       } catch (notifError) {
         console.error('Erro ao criar notificação de like:', notifError)
       }
+
+      // Check achievements for the post author (received a like)
+      checkAchievements(post.authorId, 'like_received').catch(() => {})
 
       return NextResponse.json({ liked: true })
     }

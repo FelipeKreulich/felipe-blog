@@ -6,9 +6,8 @@ import { LogLevel } from '@/lib/generated/prisma'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
@@ -66,10 +65,7 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
-
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },

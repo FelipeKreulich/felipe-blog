@@ -20,9 +20,11 @@ const translations = {
     'header.blogName': 'Kreulich Blog',
     'header.profile': 'Perfil',
     'header.myPosts': 'Meus Posts',
+    'header.bookmarks': 'Favoritos',
+    'header.achievements': 'Conquistas',
     'header.settings': 'Configurações',
     'header.logout': 'Sair',
-    
+
     // Hero Section
     'hero.badge': '✨ Blog Pessoal',
     'hero.title': 'Compartilhando conhecimento e experiências',
@@ -321,7 +323,6 @@ const translations = {
     'admin.subtitle': 'Gerencie todos os aspectos do seu blog',
     'admin.backToBlog': 'Voltar ao Blog',
     'admin.unauthorized': 'Acesso não autorizado',
-    'admin.invalidHash': 'Hash inválida ou acesso negado',
 
     // Admin Tabs
     'admin.tabs.overview': 'Visão Geral',
@@ -437,6 +438,50 @@ const translations = {
     'admin.logs.clearDialog.clearing': 'Limpando...',
     'admin.logs.toast.cleared': 'log(s) deletado(s)',
     'admin.logs.toast.error': 'Erro ao limpar logs',
+
+    // Post Editor
+    'editor.newPost': 'Novo Post',
+    'editor.editPost': 'Editar Post',
+    'editor.newPostDescription': 'Crie um novo artigo para o blog',
+    'editor.saveDraft': 'Salvar Rascunho',
+    'editor.publish': 'Publicar',
+    'editor.saving': 'Salvando...',
+    'editor.title': 'Título',
+    'editor.titlePlaceholder': 'Digite o título do post...',
+    'editor.characters': 'caracteres',
+    'editor.excerpt': 'Resumo',
+    'editor.excerptPlaceholder': 'Breve resumo do post (aparecerá nos cards)...',
+    'editor.content': 'Conteúdo',
+    'editor.contentPlaceholder': 'Escreva o conteúdo do seu post aqui...',
+    'editor.coverImage': 'Imagem de Capa',
+    'editor.coverImageDescription': 'URL da imagem de capa',
+    'editor.categories': 'Categorias',
+    'editor.categoriesDescription': 'Selecione as categorias',
+    'editor.tags': 'Tags',
+    'editor.tagsDescription': 'Adicione tags ao post',
+    'editor.tagPlaceholder': 'Digite uma tag...',
+    'editor.add': 'Adicionar',
+    'editor.required': 'obrigatório',
+    'editor.titleRequired': 'Título é obrigatório',
+    'editor.contentRequired': 'Conteúdo é obrigatório',
+    'editor.saveSuccess': 'Post salvo com sucesso!',
+    'editor.saveError': 'Erro ao salvar post',
+    'editor.noPermission': 'Você não tem permissão para criar posts',
+    'editor.accessDenied': 'Acesso Negado',
+    'editor.accessDeniedDescription': 'Você não tem permissão para criar posts.',
+    'editor.cancel': 'Cancelar',
+    'editor.notFound': 'Post não encontrado',
+    'editor.noEditPermission': 'Você não tem permissão para editar este post',
+    'editor.loadError': 'Erro ao carregar post',
+
+    // Achievements
+    'achievements.title': 'Conquistas',
+    'achievements.subtitle': 'Acompanhe seu progresso e desbloqueie conquistas',
+    'achievements.unlocked': 'Desbloqueada',
+    'achievements.locked': 'Bloqueada',
+    'achievements.progress': 'Progresso',
+    'achievements.points': 'pontos',
+    'achievements.unlockedCount': 'desbloqueadas',
   },
   en: {
     // Header
@@ -445,9 +490,11 @@ const translations = {
     'header.blogName': 'Kreulich Blog',
     'header.profile': 'Profile',
     'header.myPosts': 'My Posts',
+    'header.bookmarks': 'Bookmarks',
+    'header.achievements': 'Achievements',
     'header.settings': 'Settings',
     'header.logout': 'Logout',
-    
+
     // Hero Section
     'hero.badge': '✨ Personal Blog',
     'hero.title': 'Sharing knowledge and experiences',
@@ -746,7 +793,6 @@ const translations = {
     'admin.subtitle': 'Manage all aspects of your blog',
     'admin.backToBlog': 'Back to Blog',
     'admin.unauthorized': 'Unauthorized access',
-    'admin.invalidHash': 'Invalid hash or access denied',
 
     // Admin Tabs
     'admin.tabs.overview': 'Overview',
@@ -862,6 +908,50 @@ const translations = {
     'admin.logs.clearDialog.clearing': 'Clearing...',
     'admin.logs.toast.cleared': 'log(s) deleted',
     'admin.logs.toast.error': 'Error clearing logs',
+
+    // Post Editor
+    'editor.newPost': 'New Post',
+    'editor.editPost': 'Edit Post',
+    'editor.newPostDescription': 'Create a new article for the blog',
+    'editor.saveDraft': 'Save Draft',
+    'editor.publish': 'Publish',
+    'editor.saving': 'Saving...',
+    'editor.title': 'Title',
+    'editor.titlePlaceholder': 'Enter the post title...',
+    'editor.characters': 'characters',
+    'editor.excerpt': 'Excerpt',
+    'editor.excerptPlaceholder': 'Brief summary of the post (shown on cards)...',
+    'editor.content': 'Content',
+    'editor.contentPlaceholder': 'Write the content of your post here...',
+    'editor.coverImage': 'Cover Image',
+    'editor.coverImageDescription': 'Cover image URL',
+    'editor.categories': 'Categories',
+    'editor.categoriesDescription': 'Select the categories',
+    'editor.tags': 'Tags',
+    'editor.tagsDescription': 'Add tags to the post',
+    'editor.tagPlaceholder': 'Enter a tag...',
+    'editor.add': 'Add',
+    'editor.required': 'required',
+    'editor.titleRequired': 'Title is required',
+    'editor.contentRequired': 'Content is required',
+    'editor.saveSuccess': 'Post saved successfully!',
+    'editor.saveError': 'Error saving post',
+    'editor.noPermission': 'You do not have permission to create posts',
+    'editor.accessDenied': 'Access Denied',
+    'editor.accessDeniedDescription': 'You do not have permission to create posts.',
+    'editor.cancel': 'Cancel',
+    'editor.notFound': 'Post not found',
+    'editor.noEditPermission': 'You do not have permission to edit this post',
+    'editor.loadError': 'Error loading post',
+
+    // Achievements
+    'achievements.title': 'Achievements',
+    'achievements.subtitle': 'Track your progress and unlock achievements',
+    'achievements.unlocked': 'Unlocked',
+    'achievements.locked': 'Locked',
+    'achievements.progress': 'Progress',
+    'achievements.points': 'points',
+    'achievements.unlockedCount': 'unlocked',
   }
 };
 

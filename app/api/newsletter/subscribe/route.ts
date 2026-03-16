@@ -1,16 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { resend, FROM_EMAIL } from '@/lib/email/resend'
+import { getResend, FROM_EMAIL } from '@/lib/email/resend'
 import { getWelcomeEmailTemplate } from '@/lib/email/templates'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 // POST - Subscribe to newsletter
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 3 subscriptions per IP per 10 minutes
+    const ip = getClientIp(req)
+    const rl = rateLimit(`newsletter:${ip}`, { limit: 3, windowSeconds: 600 })
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: 'Muitas tentativas. Tente novamente mais tarde.' },
+        { status: 429 }
+      )
+    }
+
     const body = await req.json()
     const { email, language = 'pt' } = body
 
     // Validar email
-    if (!email || !email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email || !emailRegex.test(email)) {
       return NextResponse.json(
         { error: 'Email inválido' },
         { status: 400 }
@@ -75,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     // Enviar email de boas-vindas
     try {
-      await resend.emails.send({
+      await getResend().emails.send({
         from: FROM_EMAIL,
         to: email,
         subject: emailTemplate.subject,

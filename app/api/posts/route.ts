@@ -60,9 +60,10 @@ export async function GET(req: NextRequest) {
         where,
         skip,
         take: pageSize,
-        orderBy: {
-          publishedAt: 'desc'
-        },
+        orderBy: [
+          { publishedAt: 'desc' },
+          { createdAt: 'desc' },
+        ],
         include: {
           author: {
             select: {

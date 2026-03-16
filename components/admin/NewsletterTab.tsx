@@ -16,11 +16,7 @@ interface Post {
   publishedAt: Date | null
 }
 
-interface NewsletterTabProps {
-  adminHash: string
-}
-
-export function NewsletterTab({ adminHash }: NewsletterTabProps) {
+export function NewsletterTab() {
   const [posts, setPosts] = useState<Post[]>([])
   const [selectedPosts, setSelectedPosts] = useState<string[]>([])
   const [customMessage, setCustomMessage] = useState('')
@@ -37,7 +33,7 @@ export function NewsletterTab({ adminHash }: NewsletterTabProps) {
   const fetchRecentPosts = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/admin/posts?hash=${adminHash}&pageSize=20`)
+      const response = await fetch(`/api/admin/posts&pageSize=20`)
       const data = await response.json()
       setPosts(data.posts || [])
     } catch (error) {
@@ -49,7 +45,7 @@ export function NewsletterTab({ adminHash }: NewsletterTabProps) {
 
   const fetchSubscriberStats = async () => {
     try {
-      const response = await fetch(`/api/admin/newsletter/stats?hash=${adminHash}`)
+      const response = await fetch(`/api/admin/newsletter/stats`)
       const data = await response.json()
       setStats(data)
     } catch (error) {
@@ -77,7 +73,7 @@ export function NewsletterTab({ adminHash }: NewsletterTabProps) {
 
     try {
       setIsSending(true)
-      const response = await fetch(`/api/admin/newsletter/send?hash=${adminHash}`, {
+      const response = await fetch(`/api/admin/newsletter/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

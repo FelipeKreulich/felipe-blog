@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
         excerpt: excerpt?.trim() || null,
         coverImage: coverImage || null,
         published,
+        status: published ? 'PUBLISHED' : 'DRAFT',
         publishedAt: published ? new Date() : null,
         authorId: session.user.id,
         categories: {

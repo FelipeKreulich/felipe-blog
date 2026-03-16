@@ -21,12 +21,14 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { TipTapEditor } from '@/components/editor/TipTapEditor';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function EditPostPage() {
   const params = useParams();
   const postId = params.id as string;
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { t } = useLanguage();
 
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
@@ -61,12 +63,12 @@ export default function EditPostPage() {
       const postRes = await fetch(`/api/posts/${postId}`);
       if (!postRes.ok) {
         if (postRes.status === 404) {
-          toast.error('Post não encontrado');
+          toast.error(t('editor.notFound'));
           router.push('/my-posts');
           return;
         }
         if (postRes.status === 403) {
-          toast.error('Você não tem permissão para editar este post');
+          toast.error(t('editor.noEditPermission'));
           router.push('/my-posts');
           return;
         }
@@ -92,7 +94,7 @@ export default function EditPostPage() {
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
-      toast.error('Erro ao carregar post');
+      toast.error(t('editor.loadError'));
       router.push('/my-posts');
     } finally {
       setIsLoading(false);
@@ -128,12 +130,12 @@ export default function EditPostPage() {
 
   const handleSave = async (shouldPublish?: boolean) => {
     if (!title.trim()) {
-      toast.error('Título é obrigatório');
+      toast.error(t('editor.titleRequired'));
       return;
     }
 
     if (!content.trim()) {
-      toast.error('Conteúdo é obrigatório');
+      toast.error(t('editor.contentRequired'));
       return;
     }
 
@@ -164,11 +166,11 @@ export default function EditPostPage() {
         throw new Error(error.error || 'Erro ao salvar post');
       }
 
-      toast.success('Post atualizado com sucesso!');
+      toast.success(t('editor.saveSuccess'));
       router.push('/my-posts');
     } catch (error: any) {
       console.error('Erro ao salvar post:', error);
-      toast.error(error.message || 'Erro ao salvar post');
+      toast.error(error.message || t('editor.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -200,9 +202,9 @@ export default function EditPostPage() {
               className="mb-2"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              {t('myPosts.backToBlog')}
             </Button>
-            <h1 className="text-3xl font-bold">Editar Post</h1>
+            <h1 className="text-3xl font-bold">{t('editor.editPost')}</h1>
             <p className="text-muted-foreground">Faça alterações no seu artigo</p>
           </div>
 

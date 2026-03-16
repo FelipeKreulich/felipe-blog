@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { Permission } from '@/types/permissions'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 // POST - Aprovar post e publicar
 export async function POST(
@@ -20,6 +21,9 @@ export async function POST(
         publishedAt: new Date(),
       },
     })
+
+    // Check achievements for the post author
+    checkAchievements(post.authorId, 'post_published').catch(() => {})
 
     return NextResponse.json({
       post,

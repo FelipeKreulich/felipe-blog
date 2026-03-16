@@ -2,26 +2,32 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+        ],
+      },
+    ]
+  },
   images: {
-    // Formatos modernos de imagem (WebP/AVIF)
     formats: ['image/avif', 'image/webp'],
-
-    // Device sizes para responsive images
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-
-    // Image sizes para diferentes breakpoints
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-
-    // Minimize layout shift
-    minimumCacheTTL: 60,
-
-    // Domínios permitidos
+    minimumCacheTTL: 604800,
     remotePatterns: [
       {
         protocol: 'http',
@@ -68,17 +74,6 @@ const nextConfig: NextConfig = {
         hostname: '**.cloudinary.com',
       },
     ],
-    domains: [
-      'localhost',
-      'external-content.duckduckgo.com',
-      'unsplash.com',
-      'images.unsplash.com',
-      'via.placeholder.com',
-      'picsum.photos',
-      'i.imgur.com',
-      'imgur.com',
-      'uploadthing.com',
-    ]
   }
 };
 

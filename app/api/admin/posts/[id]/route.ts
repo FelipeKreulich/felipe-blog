@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAdminAccess } from '@/lib/admin'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 export async function DELETE(
   req: NextRequest,
@@ -8,10 +9,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
@@ -39,10 +38,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
@@ -56,9 +53,9 @@ export async function PATCH(
     let updateData: any = {}
 
     if (action === 'publish') {
-      updateData = { published: true, publishedAt: new Date() }
+      updateData = { published: true, status: 'PUBLISHED', publishedAt: new Date() }
     } else if (action === 'unpublish') {
-      updateData = { published: false, publishedAt: null }
+      updateData = { published: false, status: 'DRAFT', publishedAt: null }
     } else if (action === 'feature') {
       updateData = { feature: true }
     } else if (action === 'unfeature') {
@@ -74,6 +71,14 @@ export async function PATCH(
       where: { id },
       data: updateData
     })
+
+    // Check achievements
+    if (action === 'publish') {
+      checkAchievements(post.authorId, 'post_published').catch(() => {})
+    }
+    if (action === 'feature') {
+      checkAchievements(post.authorId, 'post_featured').catch(() => {})
+    }
 
     return NextResponse.json({ post })
   } catch (error) {

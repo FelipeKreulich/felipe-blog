@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateAdminAccess } from '@/lib/admin'
-import { resend, FROM_EMAIL } from '@/lib/email/resend'
+import { getResend, FROM_EMAIL } from '@/lib/email/resend'
 import { getNewsletterEmailTemplate } from '@/lib/email/newsletter-templates'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -19,11 +19,8 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
  */
 export async function POST(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
-
     // Validar acesso admin
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
@@ -125,7 +122,7 @@ export async function POST(req: NextRequest) {
           // Enviar para cada email do lote
           await Promise.all(
             batch.map((email) =>
-              resend.emails.send({
+              getResend().emails.send({
                 from: FROM_EMAIL,
                 to: email,
                 subject: emailTemplate.subject,

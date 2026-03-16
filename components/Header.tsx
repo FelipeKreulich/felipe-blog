@@ -39,7 +39,7 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push('/');
+    router.push('/blog');
   };
 
   const getInitials = (name: string) => {
@@ -73,7 +73,7 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
   }, [router]);
 
   const Logo = () => (
-    <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+    <Link href="/blog" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
       {showAnimations ? (
         <motion.div 
           className="flex items-center space-x-2"
@@ -136,11 +136,11 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/bookmarks')}>
               <Bookmark className="mr-2 h-4 w-4" />
-              <span>Bookmarks</span>
+              <span>{t('header.bookmarks')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/achievements')}>
               <Trophy className="mr-2 h-4 w-4" />
-              <span>Achievements</span>
+              <span>{t('header.achievements')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/settings')}>
               <Settings className="mr-2 h-4 w-4" />
@@ -264,7 +264,7 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
                     }}
                   >
                     <Bookmark className="mr-2 h-4 w-4" />
-                    Bookmarks
+                    {t('header.bookmarks')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -275,7 +275,7 @@ export function Header({ showAnimations = true, className = "" }: HeaderProps) {
                     }}
                   >
                     <Trophy className="mr-2 h-4 w-4" />
-                    Achievements
+                    {t('header.achievements')}
                   </Button>
                   <Button
                     variant="ghost"

@@ -8,10 +8,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },
@@ -48,10 +46,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
-    const { searchParams } = new URL(req.url)
-    const hash = searchParams.get('hash')
 
-    const validation = await validateAdminAccess(hash)
+    const validation = await validateAdminAccess()
     if (!validation.valid) {
       return NextResponse.json(
         { error: validation.error },

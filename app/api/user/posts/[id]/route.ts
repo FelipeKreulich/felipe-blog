@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkAchievements } from '@/lib/gamification/checker'
 
 export async function DELETE(
   req: NextRequest,
@@ -101,11 +102,13 @@ export async function PATCH(
     if (action === 'publish') {
       updateData = {
         published: true,
+        status: 'PUBLISHED',
         publishedAt: new Date()
       }
     } else if (action === 'unpublish') {
       updateData = {
         published: false,
+        status: 'DRAFT',
         publishedAt: null
       }
     } else if (action === 'feature') {
@@ -127,6 +130,14 @@ export async function PATCH(
       where: { id: postId },
       data: updateData
     })
+
+    // Check achievements when publishing
+    if (action === 'publish') {
+      checkAchievements(session.user.id, 'post_published').catch(() => {})
+    }
+    if (action === 'feature') {
+      checkAchievements(post.authorId, 'post_featured').catch(() => {})
+    }
 
     return NextResponse.json({
       success: true,

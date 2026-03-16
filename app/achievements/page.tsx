@@ -33,7 +33,7 @@ interface UserAchievement {
 
 export default function AchievementsPage() {
   const { data: session } = useSession()
-  const { language } = useLanguage()
+  const { t } = useLanguage()
   const [achievements, setAchievements] = useState<Achievement[]>([])
   const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([])
   const [loading, setLoading] = useState(true)
@@ -101,16 +101,16 @@ export default function AchievementsPage() {
           <div className="flex items-center gap-3 mb-2">
             <Trophy className="h-8 w-8 text-yellow-600" />
             <h1 className="text-3xl font-bold">
-              {language === 'pt' ? 'Conquistas' : 'Achievements'}
+              {t('achievements.title')}
             </h1>
           </div>
           <p className="text-muted-foreground">
-            {language === 'pt' ? 'Desbloqueie badges e ganhe XP' : 'Unlock badges and earn XP'}
+            {t('achievements.subtitle')}
           </p>
           {session && (
             <div className="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold">Progresso</span>
+                <span className="font-semibold">{t('achievements.progress')}</span>
                 <span className="text-sm">{userAchievements.length} / {achievements.length}</span>
               </div>
               <Progress value={(userAchievements.length / achievements.length) * 100} />
@@ -150,7 +150,7 @@ export default function AchievementsPage() {
                         </div>
                         {unlocked && (
                           <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            ✓ Desbloqueada
+                            ✓ {t('achievements.unlocked')}
                           </Badge>
                         )}
                       </div>

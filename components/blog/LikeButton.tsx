@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Heart } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface LikeButtonProps {
   postId?: string
@@ -39,7 +40,7 @@ export function LikeButton({ postId, commentId, initialLikes = 0, className = ''
 
   async function handleLike() {
     if (!session) {
-      alert('Você precisa estar logado para curtir')
+      toast.error('Você precisa estar logado para curtir')
       return
     }
 

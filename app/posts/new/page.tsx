@@ -54,7 +54,7 @@ export default function NewPostPage() {
     if (session?.user) {
       const allowedRoles = ['WRITER', 'EDITOR', 'MODERATOR', 'ADMIN'];
       if (!allowedRoles.includes(session.user.role)) {
-        toast.error('Você não tem permissão para criar posts');
+        toast.error(t('editor.noPermission'));
         router.push('/blog');
         return;
       }
@@ -110,12 +110,12 @@ export default function NewPostPage() {
 
   const handleSave = async (shouldPublish: boolean) => {
     if (!title.trim()) {
-      toast.error('Título é obrigatório');
+      toast.error(t('editor.titleRequired'));
       return;
     }
 
     if (!content.trim()) {
-      toast.error('Conteúdo é obrigatório');
+      toast.error(t('editor.contentRequired'));
       return;
     }
 
@@ -142,11 +142,11 @@ export default function NewPostPage() {
       }
 
       const data = await response.json();
-      toast.success(shouldPublish ? 'Post publicado com sucesso!' : 'Rascunho salvo com sucesso!');
+      toast.success(t('editor.saveSuccess'));
       router.push('/my-posts');
     } catch (error: any) {
       console.error('Erro ao salvar post:', error);
-      toast.error(error.message || 'Erro ao salvar post');
+      toast.error(error.message || t('editor.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -178,10 +178,10 @@ export default function NewPostPage() {
               className="mb-2"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              {t('myPosts.backToBlog')}
             </Button>
-            <h1 className="text-3xl font-bold">Novo Post</h1>
-            <p className="text-muted-foreground">Crie um novo artigo para o blog</p>
+            <h1 className="text-3xl font-bold">{t('editor.newPost')}</h1>
+            <p className="text-muted-foreground">{t('editor.newPostDescription')}</p>
           </div>
 
           <div className="flex gap-2">
@@ -195,7 +195,7 @@ export default function NewPostPage() {
               ) : (
                 <Save className="h-4 w-4 mr-2" />
               )}
-              Salvar Rascunho
+              {t('editor.saveDraft')}
             </Button>
             <Button
               onClick={() => handleSave(true)}
@@ -206,7 +206,7 @@ export default function NewPostPage() {
               ) : (
                 <Eye className="h-4 w-4 mr-2" />
               )}
-              Publicar
+              {t('editor.publish')}
             </Button>
           </div>
         </div>
@@ -218,18 +218,18 @@ export default function NewPostPage() {
             <Card>
               <CardContent className="pt-6">
                 <Label htmlFor="title" className="text-base font-semibold">
-                  Título *
+                  {t('editor.title')} *
                 </Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Digite o título do post..."
+                  placeholder={t('editor.titlePlaceholder')}
                   className="text-2xl font-bold h-auto py-3 mt-2"
                   maxLength={200}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  {title.length}/200 caracteres
+                  {title.length}/200 {t('editor.characters')}
                 </p>
               </CardContent>
             </Card>
@@ -238,18 +238,18 @@ export default function NewPostPage() {
             <Card>
               <CardContent className="pt-6">
                 <Label htmlFor="excerpt" className="text-base font-semibold">
-                  Resumo
+                  {t('editor.excerpt')}
                 </Label>
                 <Textarea
                   id="excerpt"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="Breve resumo do post (aparecerá nos cards)..."
+                  placeholder={t('editor.excerptPlaceholder')}
                   className="mt-2 min-h-[100px]"
                   maxLength={300}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  {excerpt.length}/300 caracteres
+                  {excerpt.length}/300 {t('editor.characters')}
                 </p>
               </CardContent>
             </Card>
@@ -258,13 +258,13 @@ export default function NewPostPage() {
             <Card>
               <CardContent className="pt-6">
                 <Label htmlFor="content" className="text-base font-semibold">
-                  Conteúdo *
+                  {t('editor.content')} *
                 </Label>
                 <div className="mt-2">
                   <TipTapEditor
                     content={content}
                     onChange={setContent}
-                    placeholder="Escreva o conteúdo do seu post aqui..."
+                    placeholder={t('editor.contentPlaceholder')}
                   />
                 </div>
               </CardContent>
@@ -276,8 +276,8 @@ export default function NewPostPage() {
             {/* Cover Image */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Imagem de Capa</CardTitle>
-                <CardDescription>URL da imagem de capa</CardDescription>
+                <CardTitle className="text-base">{t('editor.coverImage')}</CardTitle>
+                <CardDescription>{t('editor.coverImageDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Input
@@ -309,8 +309,8 @@ export default function NewPostPage() {
             {/* Categories */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Categorias</CardTitle>
-                <CardDescription>Selecione as categorias</CardDescription>
+                <CardTitle className="text-base">{t('editor.categories')}</CardTitle>
+                <CardDescription>{t('editor.categoriesDescription')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -340,8 +340,8 @@ export default function NewPostPage() {
             {/* Tags */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Tags</CardTitle>
-                <CardDescription>Adicione tags ao post</CardDescription>
+                <CardTitle className="text-base">{t('editor.tags')}</CardTitle>
+                <CardDescription>{t('editor.tagsDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex gap-2">
@@ -349,7 +349,7 @@ export default function NewPostPage() {
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagKeyDown}
-                    placeholder="Digite uma tag..."
+                    placeholder={t('editor.tagPlaceholder')}
                     className="flex-1"
                   />
                   <Button
@@ -358,7 +358,7 @@ export default function NewPostPage() {
                     onClick={handleAddTag}
                     disabled={!tagInput.trim()}
                   >
-                    Adicionar
+                    {t('editor.add')}
                   </Button>
                 </div>
 

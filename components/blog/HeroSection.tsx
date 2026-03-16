@@ -9,6 +9,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { PostListItem } from "@/types/post";
 import { format } from "date-fns";
 import { ptBR, enUS } from "date-fns/locale";
+import Link from "next/link";
+import Image from "next/image";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -97,21 +99,29 @@ export default function HeroSection() {
               whileHover={{ y: -5 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              <Card
-                className="overflow-hidden group cursor-pointer"
-                onClick={() => window.location.href = `/blog/${mainPost.slug}`}
-              >
-                <div
-                  className="relative h-64 md:h-80"
-                  style={{
-                    background: mainPost.coverImage
-                      ? `url(${mainPost.coverImage}) center/cover`
-                      : `linear-gradient(135deg, ${mainPost.categories[0]?.category.color || '#3b82f6'}, ${mainPost.categories[0]?.category.color || '#3b82f6'}dd)`
-                  }}
-                >
+              <Link href={`/blog/${mainPost.slug}`}>
+              <Card className="overflow-hidden group cursor-pointer">
+                <div className="relative h-64 md:h-80 overflow-hidden">
+                  {mainPost.coverImage ? (
+                    <Image
+                      src={mainPost.coverImage}
+                      alt={mainPost.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                      priority
+                    />
+                  ) : (
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(135deg, ${mainPost.categories[0]?.category.color || '#3b82f6'}, ${mainPost.categories[0]?.category.color || '#3b82f6'}dd)`
+                      }}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
                   {mainPost.categories[0] && (
-                    <div className="absolute bottom-4 left-4">
+                    <div className="absolute bottom-4 left-4 z-10">
                       <Badge variant="secondary" className="bg-white/90 text-gray-900">
                         {mainPost.categories[0].category.name}
                       </Badge>
@@ -151,6 +161,7 @@ export default function HeroSection() {
                   </div>
                 </CardContent>
               </Card>
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -172,24 +183,23 @@ export default function HeroSection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.3, ease: "easeOut" }}
                   >
-                    <Card
-                      className="cursor-pointer group"
-                      onClick={() => window.location.href = `/blog/${post.slug}`}
-                    >
-                      <CardContent className="p-4">
-                        {post.categories[0] && (
-                          <Badge variant="outline" className="mb-2 text-xs">
-                            {post.categories[0].category.name}
-                          </Badge>
-                        )}
-                        <h3 className="font-semibold text-foreground mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {post.excerpt || t('blog.noDescription')}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/blog/${post.slug}`}>
+                      <Card className="cursor-pointer group">
+                        <CardContent className="p-4">
+                          {post.categories[0] && (
+                            <Badge variant="outline" className="mb-2 text-xs">
+                              {post.categories[0].category.name}
+                            </Badge>
+                          )}
+                          <h3 className="font-semibold text-foreground mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                            {post.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-3">
+                            {post.excerpt || t('blog.noDescription')}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </motion.div>
                 ))}
               </div>
