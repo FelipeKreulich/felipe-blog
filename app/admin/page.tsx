@@ -144,13 +144,13 @@ export default function AdminDashboard() {
       setStats(statsData);
 
       // Buscar users
-      const usersResponse = await fetch(`/api/admin/users&pageSize=100`);
+      const usersResponse = await fetch(`/api/admin/users?pageSize=100`);
       if (!usersResponse.ok) throw new Error('Erro ao buscar usuários');
       const usersData = await usersResponse.json();
       setUsers(usersData.users);
 
       // Buscar posts
-      const postsResponse = await fetch(`/api/admin/posts&pageSize=100`);
+      const postsResponse = await fetch(`/api/admin/posts?pageSize=100`);
       if (!postsResponse.ok) throw new Error('Erro ao buscar posts');
       const postsData = await postsResponse.json();
       setPosts(postsData.posts);

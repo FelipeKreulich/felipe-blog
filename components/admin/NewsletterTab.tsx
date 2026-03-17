@@ -33,7 +33,7 @@ export function NewsletterTab() {
   const fetchRecentPosts = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/admin/posts&pageSize=20`)
+      const response = await fetch(`/api/admin/posts?pageSize=20`)
       const data = await response.json()
       setPosts(data.posts || [])
     } catch (error) {

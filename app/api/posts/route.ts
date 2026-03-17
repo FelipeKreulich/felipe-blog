@@ -17,9 +17,12 @@ export async function GET(req: NextRequest) {
     // Calcular skip para paginação
     const skip = (page - 1) * pageSize
 
-    // Construir filtros
+    // Construir filtros - aceita published=true OU status=PUBLISHED
     const where: any = {
-      published: true, // Apenas posts publicados
+      OR: [
+        { published: true },
+        { status: 'PUBLISHED' },
+      ],
     }
 
     if (featured) {
@@ -47,10 +50,14 @@ export async function GET(req: NextRequest) {
     }
 
     if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { excerpt: { contains: search, mode: 'insensitive' } },
-        { content: { contains: search, mode: 'insensitive' } },
+      where.AND = [
+        {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { excerpt: { contains: search, mode: 'insensitive' } },
+            { content: { contains: search, mode: 'insensitive' } },
+          ]
+        }
       ]
     }
 
