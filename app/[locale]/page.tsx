@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { sameAlternates, absolute, localePath } from "@/lib/seo";
+import { site } from "@/lib/site";
+import { JsonLd } from "@/components/site/json-ld";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
@@ -8,6 +12,11 @@ import { EditorNote } from "@/components/site/editor-note";
 import { Newsletter } from "@/components/site/newsletter";
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: sameAlternates(locale) };
+}
 
 export default async function Home({ params, searchParams }: PageProps<"/[locale]">) {
   const { locale } = await params;
@@ -25,8 +34,21 @@ export default async function Home({ params, searchParams }: PageProps<"/[locale
   const hasMore = rest.length > 3;
 
   const tp = await getTranslations("profile");
+  const ts = await getTranslations("site");
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite", "@id": absolute("/#website"), url: absolute(localePath(locale)), name: "The Commit Times",
+        description: ts("tagline"), inLanguage: locale === "pt" ? "pt-BR" : "en",
+        publisher: { "@id": absolute("/#author") },
+      },
+      { "@type": "Person", "@id": absolute("/#author"), name: "Felipe Kreulich", url: site.github, sameAs: [site.github, site.buyMeACoffee, site.linkedin].filter(Boolean) },
+    ],
+  };
   return (
     <div className="space-y-12">
+      <JsonLd data={jsonLd} />
       {deleted && <p role="status" className="border-l-2 border-accent bg-card p-4 text-sm">{tp("accountDeleted")}</p>}
       <article className="group grid gap-6 border-b pb-12 md:grid-cols-[2fr_1fr] md:gap-10">
         {l.cover && (

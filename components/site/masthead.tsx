@@ -6,14 +6,16 @@ import { LocaleSwitch } from "./locale-switch";
 import { Clock } from "./clock";
 import { UserMenu } from "./user-menu";
 
+// ponytail: nº da edição = dias desde o lançamento; troque se quiser contar por post
+const editionNumber = () => Math.floor((Date.now() - Date.UTC(2026, 10, 15)) / 864e5) + 1;
+
 export async function Masthead() {
   const locale = await getLocale();
   const t = await getTranslations();
   const today = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   }).format(new Date());
-  // ponytail: nº da edição = dias desde o lançamento; troque se quiser contar por post
-  const edition = Math.floor((Date.now() - Date.UTC(2026, 10, 15)) / 864e5) + 1;
+  const edition = editionNumber();
 
   return (
     <header className="mx-auto w-full max-w-6xl px-4 sm:px-6">

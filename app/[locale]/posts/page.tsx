@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPostCards } from "@/lib/posts";
+import { sameAlternates } from "@/lib/seo";
 import { PostGrid } from "@/components/site/post-grid";
 
 export const revalidate = 60;
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/posts">): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "archive" });
-  return { title: t("title") };
+  const [t, ts] = await Promise.all([getTranslations({ locale, namespace: "archive" }), getTranslations({ locale, namespace: "site" })]);
+  return { title: t("title"), description: ts("tagline"), alternates: sameAlternates(locale, "/posts") };
 }
 
 // ponytail: lista tudo de uma vez; paginar quando passar de ~60 posts

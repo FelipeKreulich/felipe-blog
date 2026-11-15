@@ -178,11 +178,12 @@
     "everywhereHint": "Encerra sua sessão em todos os aparelhos, inclusive este. Útil se você entrou num computador que não é seu.",
     "newsletter": "Newsletter",
     "nl_confirmed": "Você recebe as novas edições por e-mail.",
-    "nl_pending": "Sua inscrição aguarda confirmação: procure o e-mail que enviamos.",
-    "nl_none": "Você não assina a newsletter. Receba um e-mail quando sair artigo novo.",
+    "nl_pending": "Enviamos um e-mail para confirmar a assinatura. Abra o link para concluir.",
+    "nl_none": "Sua conta não tem assinatura vinculada. Se já assina por e-mail, cancele pelo link em qualquer edição; ou assine por aqui.",
     "nlSubscribe": "Assinar",
     "nlCancel": "Cancelar assinatura",
-    "nlCancelled": "Assinatura cancelada."
+    "nlCancelled": "Assinatura cancelada.",
+    "nlCheckInbox": "Enviamos um e-mail para confirmar. Abra o link para concluir."
   },
   "legal": {
     "kicker": "Institucional",

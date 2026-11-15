@@ -19,10 +19,11 @@ export function CookieConsent() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!getConsent()) setOpen(true);
+    // cookie só existe no cliente: decide no próximo frame (evita mismatch de hidratação)
+    const raf = requestAnimationFrame(() => { if (!getConsent()) setOpen(true); });
     const reopen = () => setOpen(true);
     window.addEventListener(OPEN_EVENT, reopen);
-    return () => window.removeEventListener(OPEN_EVENT, reopen);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener(OPEN_EVENT, reopen); };
   }, []);
 
   const choose = (v: "all" | "essential") => {

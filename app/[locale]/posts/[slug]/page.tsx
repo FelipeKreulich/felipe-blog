@@ -6,6 +6,8 @@ import { ArrowLeft } from "lucide-react";
 import { Link, redirect } from "@/i18n/routing";
 import { getPost } from "@/lib/post";
 import { renderMarkdown } from "@/lib/markdown";
+import { absolute, localePath, ogLocale } from "@/lib/seo";
+import { JsonLd } from "@/components/site/json-ld";
 import { getCurrentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 import { LikeButton } from "@/components/post/like-button";
@@ -17,12 +19,21 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/posts/[s
   const { locale, slug } = await params;
   const r = await getPost(locale, slug);
   if (!r || !("tr" in r) || !r.tr) return {};
-  const canonical = r.fallbackLocale ? `${r.fallbackLocale === "pt" ? "" : "/en"}/posts/${r.tr.slug}` : undefined;
+  const others = await db.postTranslation.findMany({ where: { postId: r.post.id }, select: { locale: true, slug: true } });
+  const languages = Object.fromEntries(others.map((o) => [o.locale === "pt" ? "pt-BR" : "en", localePath(o.locale, `/posts/${o.slug}`)]));
+  const ownLocale = r.fallbackLocale ?? locale;
+  const canonical = localePath(ownLocale, `/posts/${r.tr.slug}`);
+  const images = r.post.coverImage ? [{ url: r.post.coverImage, alt: r.tr.title }] : undefined;
   return {
-    alternates: canonical ? { canonical } : undefined,
     title: r.tr.title,
     description: r.tr.excerpt,
-    openGraph: { type: "article", title: r.tr.title, description: r.tr.excerpt, images: r.post.coverImage ? [r.post.coverImage] : [] },
+    alternates: { canonical, languages: { ...languages, "x-default": languages["pt-BR"] ?? canonical } },
+    openGraph: {
+      type: "article", title: r.tr.title, description: r.tr.excerpt, url: canonical, locale: ogLocale(ownLocale), images,
+      publishedTime: r.post.publishedAt?.toISOString(), modifiedTime: r.post.updatedAt.toISOString(),
+      authors: ["Felipe Kreulich"], tags: r.post.tags.map((tg) => (ownLocale === "pt" ? tg.namePt : tg.nameEn)),
+    },
+    twitter: { card: "summary_large_image", title: r.tr.title, description: r.tr.excerpt, images: r.post.coverImage ? [r.post.coverImage] : undefined },
   };
 }
 
@@ -45,8 +56,27 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
   const date = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { dateStyle: "long" }).format(post.publishedAt!);
   const minutes = Math.max(1, Math.round(tr.content.split(/\s+/).length / 220));
 
+  const ownLocale = fallbackLocale ?? locale;
+  const url = absolute(localePath(ownLocale, `/posts/${tr.slug}`));
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: tr.title,
+    description: tr.excerpt,
+    inLanguage: ownLocale === "pt" ? "pt-BR" : "en",
+    datePublished: post.publishedAt!.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    mainEntityOfPage: url,
+    url,
+    image: post.coverImage ? [absolute(post.coverImage)] : undefined,
+    keywords: post.tags.map((tg) => (ownLocale === "pt" ? tg.namePt : tg.nameEn)).join(", "),
+    wordCount: tr.content.split(/\s+/).length,
+    author: { "@type": "Person", name: "Felipe Kreulich", url: absolute("/") },
+    publisher: { "@type": "Organization", name: "The Commit Times", logo: { "@type": "ImageObject", url: absolute("/brand/logo.svg") } },
+  };
   return (
     <article className="space-y-10">
+      <JsonLd data={jsonLd} />
       <Link href="/" className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="size-3.5" /> {t("back")}
       </Link>

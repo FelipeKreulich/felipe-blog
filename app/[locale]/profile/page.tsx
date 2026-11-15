@@ -33,8 +33,12 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   if (!user) return redirect({ href: { pathname: "/signin", query: { next: "/profile" } }, locale });
 
   const t = await getTranslations("profile");
-  const sub = await db.subscriber.findUnique({ where: { email: user.email }, select: { confirmedAt: true } });
-  const nlStatus = !sub ? "none" : sub.confirmedAt ? "confirmed" : "pending";
+  // só o que está vinculado (ou pedido) por ESTA conta; nunca revela assinaturas do e-mail feitas por outra via
+  const [linked, requested] = await Promise.all([
+    db.subscriber.findUnique({ where: { userId: user.id }, select: { id: true } }),
+    db.subscriber.findFirst({ where: { linkUserId: user.id }, select: { id: true } }),
+  ]);
+  const nlStatus = linked ? "confirmed" : requested ? "pending" : "none";
   const since = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { month: "long", year: "numeric" }).format(user.createdAt);
   const subject = encodeURIComponent(t("emailSubject"));
 

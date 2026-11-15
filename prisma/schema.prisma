@@ -159,6 +159,10 @@ model Subscriber {
   locale      Locale    @default(pt)
   token       String    @unique @default(cuid()) // confirmar e descadastrar
   confirmedAt DateTime?
+  // Vínculo com conta só após o dono do e-mail clicar no link (e-mail da conta não é verificado):
+  // linkUserId = pedido feito pelo perfil, aguardando confirmação; userId = vínculo comprovado.
+  userId      String?   @unique
+  linkUserId  String?
   createdAt   DateTime  @default(now())
 }
 

@@ -4,6 +4,8 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { site } from "@/lib/site";
+import { ogLocale } from "@/lib/seo";
 import { Providers } from "@/components/site/providers";
 import { Masthead } from "@/components/site/masthead";
 import { ThemeScript } from "@/components/site/theme-script";
@@ -24,9 +26,25 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "site" });
   return {
+    metadataBase: new URL(site.url),
     title: { default: "The Commit Times", template: "%s · The Commit Times" },
     description: t("tagline"),
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+    applicationName: "The Commit Times",
+    authors: [{ name: "Felipe Kreulich", url: site.github }],
+    creator: "Felipe Kreulich",
+    keywords: locale === "pt"
+      ? ["tecnologia", "programação", "segurança", "desenvolvimento web", "IA", "blog"]
+      : ["technology", "programming", "security", "web development", "AI", "blog"],
+    alternates: { types: { "application/rss+xml": [{ url: "/feed.xml", title: "The Commit Times (RSS)" }] } },
+    openGraph: {
+      type: "website",
+      siteName: "The Commit Times",
+      locale: ogLocale(locale),
+      alternateLocale: [ogLocale(locale === "pt" ? "en" : "pt")],
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "The Commit Times" }],
+    },
+    twitter: { card: "summary_large_image", images: ["/og.jpg"] },
+    robots: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   };
 }
 

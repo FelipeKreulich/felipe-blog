@@ -9,7 +9,10 @@ export function Preloader() {
 
   useEffect(() => {
     const html = document.documentElement;
-    if (!html.hasAttribute("data-preload")) return setDone(true);
+    if (!html.hasAttribute("data-preload")) {
+      const raf = requestAnimationFrame(() => setDone(true));
+      return () => cancelAnimationFrame(raf);
+    }
     try { sessionStorage.setItem("preloaded", "1"); } catch {}
     const t = setTimeout(() => { html.removeAttribute("data-preload"); setDone(true); }, 2000);
     return () => clearTimeout(t);

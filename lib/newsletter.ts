@@ -13,6 +13,12 @@ const schema = z.object({
 });
 
 export async function subscribe(_: SubscribeState, form: FormData): Promise<SubscribeState> {
+  return subscribeEmail(form, null);
+}
+
+// linkUserId: pedido feito pelo perfil. O vínculo com a conta só acontece quando o dono do e-mail
+// clicar no link; até lá nada muda, e a resposta é sempre a mesma (não revela se já assinava).
+export async function subscribeEmail(form: FormData, linkUserId: string | null): Promise<SubscribeState> {
   const locale = (await getLocale()) as "pt" | "en";
   const t = await getTranslations({ locale, namespace: "newsletter" });
   const parsed = schema.safeParse({ email: form.get("email"), website: form.get("website") ?? "" });
@@ -20,9 +26,11 @@ export async function subscribe(_: SubscribeState, form: FormData): Promise<Subs
 
   const { email } = parsed.data;
   const existing = await db.subscriber.findUnique({ where: { email } });
-  if (existing?.confirmedAt) return { status: "ok", message: t("already") };
+  if (existing?.confirmedAt && !linkUserId) return { status: "ok", message: t("already") };
 
-  const sub = existing ?? (await db.subscriber.create({ data: { email, locale } }));
+  const sub = existing
+    ? (linkUserId ? await db.subscriber.update({ where: { id: existing.id }, data: { linkUserId } }) : existing)
+    : await db.subscriber.create({ data: { email, locale, linkUserId } });
   const base = `${site.url}${locale === "pt" ? "" : "/en"}`;
   const link = `${base}/newsletter/confirm?token=${sub.token}`;
 

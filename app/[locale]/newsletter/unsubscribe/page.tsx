@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { db } from "@/lib/db";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function Unsubscribe({ params, searchParams }: PageProps<"/[locale]/newsletter/unsubscribe">) {
   const { locale } = await params;

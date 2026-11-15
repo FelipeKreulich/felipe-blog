@@ -1,23 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useLocale } from "next-intl";
 
-// Hora local do leitor, atualizada a cada minuto. Renderiza só após montar (evita mismatch de hidratação).
+// Hora local do leitor, atualizada na virada de cada minuto. useSyncExternalStore: no servidor
+// (e na hidratação) devolve null, no cliente o minuto atual, sem setState dentro de efeito.
+function subscribe(onChange: () => void) {
+  let id: ReturnType<typeof setInterval>;
+  const t = setTimeout(() => { onChange(); id = setInterval(onChange, 60_000); }, 60_000 - (Date.now() % 60_000));
+  return () => { clearTimeout(t); clearInterval(id); };
+}
+const minute = () => Math.floor(Date.now() / 60_000);
+
 export function Clock() {
   const locale = useLocale();
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setNow(new Date());
-    let id: ReturnType<typeof setInterval>;
-    const t = setTimeout(() => {
-      setNow(new Date());
-      id = setInterval(() => setNow(new Date()), 60_000);
-    }, 60_000 - (Date.now() % 60_000)); // alinha na virada do minuto
-    return () => { clearTimeout(t); clearInterval(id); };
-  }, []);
-
+  const m = useSyncExternalStore(subscribe, minute, () => null);
   const fmt = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
+  const now = m === null ? null : new Date(m * 60_000);
   return (
     <time suppressHydrationWarning dateTime={now?.toISOString()} className="tabular-nums">
       {now ? fmt.format(now) : "--:--"}

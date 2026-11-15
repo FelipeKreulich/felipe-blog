@@ -8,7 +8,7 @@ import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 import { deleteUserAccount } from "@/lib/account";
-import { subscribe } from "@/lib/newsletter";
+import { subscribeEmail } from "@/lib/newsletter";
 
 export type ProfileState = { ok?: string; error?: string };
 
@@ -106,19 +106,20 @@ export async function signOutEverywhere(): Promise<void> {
   await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/signin` });
 }
 
-// Newsletter pelo perfil (sempre com o e-mail da conta). Assinar passa pelo mesmo double opt-in.
+// Newsletter pelo perfil. O e-mail da conta não é verificado, então o perfil só enxerga e cancela
+// a assinatura VINCULADA a esta conta (vínculo feito quando o dono do e-mail clicou no link).
 export async function profileNewsletter(subscribeIt: boolean): Promise<ProfileState> {
   const t = await getTranslations("profile");
   const user = await me();
   if (!user) return { error: t("needAuth") };
   if (!subscribeIt) {
-    await db.subscriber.deleteMany({ where: { email: user.email } });
+    await db.subscriber.deleteMany({ where: { userId: user.id } });
     revalidatePath("/", "layout");
     return { ok: t("nlCancelled") };
   }
   const fd = new FormData();
   fd.set("email", user.email);
-  const r = await subscribe({ status: "idle" }, fd);
+  const r = await subscribeEmail(fd, user.id);
   revalidatePath("/", "layout");
-  return r.status === "error" ? { error: r.message } : { ok: r.message };
+  return r.status === "error" ? { error: r.message } : { ok: t("nlCheckInbox") };
 }

@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { getPage, type PageKey } from "@/lib/pages";
 import { renderMarkdown } from "@/lib/markdown";
+import { sameAlternates } from "@/lib/seo";
 
 // Página institucional escrita no admin. Sem versão no idioma, cai para PT; sem nenhuma, "em redação".
 export async function LegalPage({ pageKey, locale }: { pageKey: PageKey; locale: string }) {
@@ -31,5 +32,5 @@ export async function LegalPage({ pageKey, locale }: { pageKey: PageKey; locale:
 
 export async function legalMetadata(pageKey: PageKey, locale: string) {
   const page = (await getPage(pageKey, locale)) ?? (await getPage(pageKey, "pt"));
-  return { title: page?.title };
+  return { title: page?.title, alternates: sameAlternates(locale, `/${pageKey}`) };
 }
