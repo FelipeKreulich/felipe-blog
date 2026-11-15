@@ -189,3 +189,7 @@ html[data-preload] { overflow: hidden; }
 .article pre { border: 1px solid var(--border); border-radius: 4px; font-size: 0.85em; }
 .article code[data-theme] span { color: var(--shiki-light); }
 .dark .article code[data-theme] span { color: var(--shiki-dark); }
+
+/* Troca de tema "rasgando o jornal" (View Transitions). O JS anima o clip-path da camada nova. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
