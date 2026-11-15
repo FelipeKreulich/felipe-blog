@@ -8,6 +8,8 @@ import { requireAdmin, slugify } from "@/lib/admin";
 import { renderMarkdown } from "@/lib/markdown";
 import { sniffImage } from "@/lib/image";
 import { site } from "@/lib/site";
+import { deleteUserAccount } from "@/lib/account";
+import bcrypt from "bcryptjs";
 
 export type AdminState = { ok?: string; error?: string };
 
@@ -212,4 +214,63 @@ export async function savePage(_: AdminState, form: FormData): Promise<AdminStat
   await db.page.upsert({ where: { key_locale: { key, locale } }, update: { title, content }, create: { key, locale, title, content } });
   refresh();
   return { ok: `Salvo (${locale.toUpperCase()}).` };
+}
+
+// ---------- usuários ----------
+const userEditSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().trim().min(2).max(60),
+  email: z.email().max(254).transform((e) => e.trim().toLowerCase()),
+  role: z.enum(["ADMIN", "READER"]),
+});
+
+export async function adminUpdateUser(_: AdminState, form: FormData): Promise<AdminState> {
+  const admin = await requireAdmin();
+  const parsed = userEditSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: "Verifique nome (2–60) e e-mail." };
+  const { id, name, email, role } = parsed.data;
+  const target = await db.user.findUnique({ where: { id }, select: { role: true, email: true } });
+  if (!target) return { error: "Usuário não encontrado." };
+
+  if (role !== "ADMIN" && target.role === "ADMIN") {
+    if (id === admin.id) return { error: "Você não pode remover o seu próprio acesso de admin." };
+    if ((await db.user.count({ where: { role: "ADMIN" } })) <= 1) return { error: "Precisa existir pelo menos um admin." };
+  }
+  if (email !== target.email && (await db.user.findUnique({ where: { email } }))) return { error: "Já existe uma conta com este e-mail." };
+
+  await db.user.update({
+    where: { id },
+    // trocar cargo ou e-mail invalida as sessões da pessoa (o JWT guarda o estado antigo)
+    data: { name, email, role, ...(role !== target.role || email !== target.email ? { sessionVersion: { increment: 1 } } : {}) },
+  });
+  refresh();
+  return { ok: "Usuário atualizado." };
+}
+
+export async function adminSetPassword(_: AdminState, form: FormData): Promise<AdminState> {
+  await requireAdmin();
+  const id = String(form.get("id") ?? "");
+  const password = z.string().min(8).max(128).safeParse(form.get("password"));
+  if (!password.success) return { error: "A senha precisa ter de 8 a 128 caracteres." };
+  await db.user.update({ where: { id }, data: { passwordHash: await bcrypt.hash(password.data, 12), sessionVersion: { increment: 1 } } });
+  return { ok: "Senha definida. As sessões da pessoa foram encerradas." };
+}
+
+export async function adminSignOutUser(id: string): Promise<AdminState> {
+  await requireAdmin();
+  await db.user.update({ where: { id }, data: { sessionVersion: { increment: 1 } } });
+  return { ok: "Sessões encerradas." };
+}
+
+export async function adminDeleteUser(id: string): Promise<AdminState> {
+  const admin = await requireAdmin();
+  if (id === admin.id) return { error: "Você não pode excluir a sua própria conta por aqui." };
+  const target = await db.user.findUnique({ where: { id }, select: { role: true } });
+  if (!target) return { error: "Usuário não encontrado." };
+  if (target.role === "ADMIN" && (await db.user.count({ where: { role: "ADMIN" } })) <= 1) return { error: "Precisa existir pelo menos um admin." };
+  const owned = await db.post.count({ where: { authorId: id } });
+  if (owned > 0) return { error: `Esta conta é autora de ${owned} post(s). Reatribua ou apague os posts antes.` };
+  await deleteUserAccount(id);
+  refresh();
+  redirect("/admin/users?deleted=1");
 }

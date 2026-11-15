@@ -3,6 +3,7 @@ import { Link, usePathname } from "@/i18n/routing";
 
 const items = [
   { href: "/admin", label: "Posts" },
+  { href: "/admin/users", label: "Usuários" },
   { href: "/admin/comments", label: "Comentários" },
   { href: "/admin/tags", label: "Tags" },
   { href: "/admin/newsletter", label: "Newsletter" },

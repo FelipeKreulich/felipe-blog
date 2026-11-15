@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/current-user";
 import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
+import { deleteUserAccount } from "@/lib/account";
 
 export type ProfileState = { ok?: string; error?: string };
 
@@ -89,11 +90,7 @@ export async function deleteAccount(_: ProfileState, form: FormData): Promise<Pr
   const password = form.get("password");
   if (typeof password !== "string" || !(await bcrypt.compare(password, user.passwordHash))) return { error: t("wrongPassword") };
 
-  await db.$transaction([
-    db.comment.deleteMany({ where: { userId: user.id, replies: { none: {} } } }),
-    db.comment.updateMany({ where: { userId: user.id }, data: { body: "", deletedAt: new Date() } }),
-    db.user.delete({ where: { id: user.id } }), // likes e avatar vão em cascata
-  ]);
+  await deleteUserAccount(user.id);
   const locale = await getLocale();
   await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/?account=deleted` });
   return {};
