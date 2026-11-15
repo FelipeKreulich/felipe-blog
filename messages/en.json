@@ -66,7 +66,11 @@
     "support": "Support",
     "supportBody": "Enjoying the content? A coffee helps keep the editions coming.",
     "coffee": "Buy me a coffee",
-    "printed": "Printed with <heart></heart> in Next.js"
+    "printed": "Printed with <heart></heart> in Next.js",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "cookies": "Cookies"
   },
   "post": {
     "back": "Back",
@@ -124,7 +128,8 @@
     "needAuth": "Sign in to comment.",
     "invalid": "Invalid comment (1 to 2000 characters).",
     "tooFast": "Easy! Wait a minute before commenting again.",
-    "removed": "[comment removed]"
+    "removed": "[comment removed]",
+    "deletedUser": "Deleted account"
   },
   "likes": {
     "count": "{n, plural, =0 {Like} one {# like} other {# likes}}",
@@ -160,6 +165,28 @@
     "fileTooBig": "Image is too large.",
     "badFile": "Unsupported image format.",
     "avatarSaved": "Photo updated.",
-    "avatarRemoved": "Photo removed."
+    "avatarRemoved": "Photo removed.",
+    "dangerZone": "Delete account",
+    "deleteWarning": "Deleting your account is permanent. Your photo, likes and comments are removed. Comments that already have replies from others stay as “[comment removed]” so the conversation doesn't break.",
+    "deleteConfirm": "I understand this can't be undone.",
+    "deleteCta": "Delete my account",
+    "confirmRequired": "Confirm you understand this is permanent.",
+    "adminCantDelete": "Administrator accounts can't be deleted from here.",
+    "accountDeleted": "Your account was deleted. Thanks for reading The Commit Times."
+  },
+  "legal": {
+    "kicker": "Legal",
+    "updated": "Updated {date}",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy policy",
+    "soon": "This page is being written."
+  },
+  "cookies": {
+    "kicker": "Notice to readers",
+    "edition": "Cookies",
+    "title": "A note on cookies.",
+    "body": "We only use essential cookies: one to keep you signed in and one to remember your language. No tracking or ads. Details in our <link>privacy policy</link>.",
+    "essential": "Essential only",
+    "accept": "Accept all"
   }
 }

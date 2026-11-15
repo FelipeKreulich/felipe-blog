@@ -193,3 +193,9 @@ html[data-preload] { overflow: hidden; }
 /* Troca de tema "rasgando o jornal" (View Transitions). O JS anima o clip-path da camada nova. */
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+/* Aviso de cookies: entra depois do pre-loader */
+.cookie-in { animation: cookie-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+html[data-preload] .cookie-in { animation-delay: 2.1s; }
+@keyframes cookie-in { from { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .cookie-in { animation: none; } }

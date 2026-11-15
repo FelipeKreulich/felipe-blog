@@ -2,8 +2,9 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/current-user";
+import { signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 
@@ -64,4 +65,25 @@ export async function removeAvatar(): Promise<void> {
   if (!user) return;
   await db.avatar.deleteMany({ where: { userId: user.id } });
   revalidatePath("/", "layout");
+}
+
+// Apaga a conta. Comentários sem respostas somem; com respostas viram "[removido]" e ficam
+// anônimos (userId -> null via onDelete: SetNull), preservando as respostas de outras pessoas.
+export async function deleteAccount(_: ProfileState, form: FormData): Promise<ProfileState> {
+  const t = await getTranslations("profile");
+  const user = await me();
+  if (!user?.passwordHash) return { error: t("needAuth") };
+  if (user.role === "ADMIN") return { error: t("adminCantDelete") };
+  if (form.get("confirm") !== "on") return { error: t("confirmRequired") };
+  const password = form.get("password");
+  if (typeof password !== "string" || !(await bcrypt.compare(password, user.passwordHash))) return { error: t("wrongPassword") };
+
+  await db.$transaction([
+    db.comment.deleteMany({ where: { userId: user.id, replies: { none: {} } } }),
+    db.comment.updateMany({ where: { userId: user.id }, data: { body: "", deletedAt: new Date() } }),
+    db.user.delete({ where: { id: user.id } }), // likes e avatar vão em cascata
+  ]);
+  const locale = await getLocale();
+  await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/?account=deleted` });
+  return {};
 }

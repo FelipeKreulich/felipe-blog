@@ -3,7 +3,7 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Camera, Loader2 } from "lucide-react";
 import { Field, submitClass } from "@/components/auth/auth-shell";
-import { changePassword, removeAvatar, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
+import { changePassword, deleteAccount, removeAvatar, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
 
 function Status({ s }: { s: ProfileState }) {
   return (
@@ -101,5 +101,27 @@ export function AvatarForm({ preview, hasAvatar }: { preview: React.ReactNode; h
         <Status s={s} />
       </div>
     </div>
+  );
+}
+
+export function DeleteAccountForm() {
+  const t = useTranslations("profile");
+  const [s, action, pending] = useActionState<ProfileState, FormData>(deleteAccount, {});
+  return (
+    <form action={action} className="space-y-4 border border-accent/50 p-5">
+      <p className="text-sm leading-relaxed text-muted-foreground">{t("deleteWarning")}</p>
+      <Field label={t("currentPassword")} name="password" type="password" required autoComplete="current-password" />
+      <label className="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="confirm" required className="mt-1 accent-[var(--accent)]" />
+        <span>{t("deleteConfirm")}</span>
+      </label>
+      <div className="flex items-center justify-between gap-4">
+        <Status s={s} />
+        <button type="submit" disabled={pending}
+          className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-mono text-[11px] uppercase tracking-wider text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50">
+          {pending && <Loader2 className="size-3.5 animate-spin" />}{t("deleteCta")}
+        </button>
+      </div>
+    </form>
   );
 }

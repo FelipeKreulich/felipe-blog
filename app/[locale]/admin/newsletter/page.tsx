@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { sendNewsletter } from "@/lib/admin-actions";
 import { ActionButton } from "@/components/admin/action-button";
 import { Badge, btnAccent } from "@/components/admin/ui";
 
 export default async function AdminNewsletter() {
+  await requireAdmin(); // não depender só do layout: página e layout renderizam em paralelo
   const [confirmed, pending, posts] = await Promise.all([
     db.subscriber.count({ where: { confirmedAt: { not: null } } }),
     db.subscriber.count({ where: { confirmedAt: null } }),

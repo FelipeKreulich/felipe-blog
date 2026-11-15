@@ -6,6 +6,7 @@ const items = [
   { href: "/admin/comments", label: "Comentários" },
   { href: "/admin/tags", label: "Tags" },
   { href: "/admin/newsletter", label: "Newsletter" },
+  { href: "/admin/pages", label: "Páginas" },
 ] as const;
 
 export function AdminNav() {

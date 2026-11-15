@@ -66,7 +66,11 @@
     "support": "Apoie",
     "supportBody": "Gostou do conteúdo? Um café ajuda a manter as edições saindo.",
     "coffee": "Me pague um café",
-    "printed": "Impresso com <heart></heart> em Next.js"
+    "printed": "Impresso com <heart></heart> em Next.js",
+    "legal": "Legal",
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "cookies": "Cookies"
   },
   "post": {
     "back": "Voltar",
@@ -124,7 +128,8 @@
     "needAuth": "Entre para comentar.",
     "invalid": "Comentário inválido (1 a 2000 caracteres).",
     "tooFast": "Calma! Aguarde um minuto antes de comentar de novo.",
-    "removed": "[comentário removido]"
+    "removed": "[comentário removido]",
+    "deletedUser": "Conta removida"
   },
   "likes": {
     "count": "{n, plural, =0 {Curtir} one {# curtida} other {# curtidas}}",
@@ -160,6 +165,28 @@
     "fileTooBig": "Imagem muito grande.",
     "badFile": "Formato de imagem não suportado.",
     "avatarSaved": "Foto atualizada.",
-    "avatarRemoved": "Foto removida."
+    "avatarRemoved": "Foto removida.",
+    "dangerZone": "Apagar conta",
+    "deleteWarning": "Apagar a conta é permanente. Sua foto, curtidas e comentários são removidos. Comentários que já têm respostas de outras pessoas ficam como “[comentário removido]” para não quebrar a conversa.",
+    "deleteConfirm": "Entendo que isso não pode ser desfeito.",
+    "deleteCta": "Apagar minha conta",
+    "confirmRequired": "Confirme que entende que é permanente.",
+    "adminCantDelete": "Contas de administrador não podem ser apagadas por aqui.",
+    "accountDeleted": "Sua conta foi apagada. Obrigado por ter lido o The Commit Times."
+  },
+  "legal": {
+    "kicker": "Institucional",
+    "updated": "Atualizado em {date}",
+    "terms": "Termos e condições",
+    "privacy": "Política de privacidade",
+    "soon": "Esta página está em redação."
+  },
+  "cookies": {
+    "kicker": "Aviso aos leitores",
+    "edition": "Cookies",
+    "title": "Uma nota sobre cookies.",
+    "body": "Usamos apenas cookies essenciais: um para manter você conectado e outro para lembrar o idioma. Nada de rastreamento ou anúncios. Detalhes na <link>política de privacidade</link>.",
+    "essential": "Apenas essenciais",
+    "accept": "Aceitar todos"
   }
 }

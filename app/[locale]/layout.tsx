@@ -9,6 +9,7 @@ import { Masthead } from "@/components/site/masthead";
 import { ThemeScript } from "@/components/site/theme-script";
 import { Preloader } from "@/components/site/preloader";
 import { Footer } from "@/components/site/footer";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import "../globals.css";
 
 const sans = Geist({ variable: "--font-sans", subsets: ["latin"] });
@@ -47,6 +48,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <Masthead />
             <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">{children}</main>
             <Footer />
+            <CookieConsent />
           </Providers>
         </NextIntlClientProvider>
       </body>

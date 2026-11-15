@@ -1,8 +1,10 @@
+import { requireAdmin } from "@/lib/admin";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { PostEditor } from "@/components/admin/post-editor";
 
 export default async function EditPost({ params, searchParams }: PageProps<"/[locale]/admin/posts/[id]">) {
+  await requireAdmin(); // não depender só do layout: página e layout renderizam em paralelo
   const { id } = await params;
   const [post, tags] = await Promise.all([
     db.post.findUnique({ where: { id }, include: { translations: true, tags: { select: { id: true } } } }),

@@ -21,7 +21,7 @@ export async function Comments({ postId, path }: { postId: string; path: string 
     id: c.id, date: fmt.format(c.createdAt),
     ...(c.deletedAt
       ? { body: t("removed"), author: "—", removed: true, canDelete: false }
-      : { body: c.body, author: c.user.name ?? "—", userId: c.userId, avatarAt: c.user.avatar?.updatedAt.getTime() ?? null,
+      : { body: c.body, author: c.user?.name ?? t("deletedUser"), userId: c.userId ?? undefined, avatarAt: c.user?.avatar?.updatedAt.getTime() ?? null,
           canDelete: !!me && (me.id === c.userId || me.role === "ADMIN") }),
   });
   const comments = rows.map((c) => ({ ...view(c), replies: c.replies.map(view) }));

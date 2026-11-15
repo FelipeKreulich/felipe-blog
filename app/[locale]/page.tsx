@@ -9,8 +9,9 @@ import { Newsletter } from "@/components/site/newsletter";
 
 export const revalidate = 60;
 
-export default async function Home({ params }: PageProps<"/[locale]">) {
+export default async function Home({ params, searchParams }: PageProps<"/[locale]">) {
   const { locale } = await params;
+  const deleted = (await searchParams).account === "deleted";
   setRequestLocale(locale);
   const t = await getTranslations("home");
   const posts = await getPostCards(locale, 5); // manchete + 3 + 1 para saber se há mais
@@ -23,8 +24,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const latest = rest.slice(0, 3);
   const hasMore = rest.length > 3;
 
+  const tp = await getTranslations("profile");
   return (
     <div className="space-y-12">
+      {deleted && <p role="status" className="border-l-2 border-accent bg-card p-4 text-sm">{tp("accountDeleted")}</p>}
       <article className="group grid gap-6 border-b pb-12 md:grid-cols-[2fr_1fr] md:gap-10">
         {l.cover && (
           <Link href={l.href} className="relative block aspect-[21/9] overflow-hidden border md:col-span-2">

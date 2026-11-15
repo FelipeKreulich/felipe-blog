@@ -195,3 +195,21 @@ export async function sendNewsletter(postId: string): Promise<AdminState> {
   }
   return { ok: `Enviado para ${sent} assinante(s).` };
 }
+
+// ---------- páginas institucionais ----------
+const pageSchema = z.object({
+  key: z.enum(["terms", "privacy"]),
+  locale: z.enum(["pt", "en"]),
+  title: z.string().trim().min(1).max(160),
+  content: z.string().min(1).max(100_000),
+});
+
+export async function savePage(_: AdminState, form: FormData): Promise<AdminState> {
+  await requireAdmin();
+  const parsed = pageSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: "Preencha título e conteúdo." };
+  const { key, locale, title, content } = parsed.data;
+  await db.page.upsert({ where: { key_locale: { key, locale } }, update: { title, content }, create: { key, locale, title, content } });
+  refresh();
+  return { ok: `Salvo (${locale.toUpperCase()}).` };
+}

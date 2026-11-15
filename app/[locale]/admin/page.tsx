@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/admin";
 import { Plus } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { Badge, btnSolid } from "@/components/admin/ui";
 
 export default async function AdminPosts() {
+  await requireAdmin(); // não depender só do layout: página e layout renderizam em paralelo
   const posts = await db.post.findMany({
     orderBy: [{ publishedAt: { sort: "desc", nulls: "first" } }, { updatedAt: "desc" }],
     include: { translations: { select: { locale: true, title: true } }, _count: { select: { likes: true, comments: true } } },

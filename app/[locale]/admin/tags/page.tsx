@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { deleteTag } from "@/lib/admin-actions";
 import { ActionButton } from "@/components/admin/action-button";
 import { TagForm } from "@/components/admin/tag-form";
 
 export default async function AdminTags() {
+  await requireAdmin(); // não depender só do layout: página e layout renderizam em paralelo
   const tags = await db.tag.findMany({ orderBy: { namePt: "asc" }, include: { _count: { select: { posts: true } } } });
   return (
     <div className="space-y-8">

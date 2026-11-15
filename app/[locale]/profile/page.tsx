@@ -4,7 +4,7 @@ import { Mail } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
 import { redirect } from "@/i18n/routing";
 import { Avatar } from "@/components/site/avatar";
-import { AvatarForm, NameForm, PasswordForm } from "@/components/profile/forms";
+import { AvatarForm, DeleteAccountForm, NameForm, PasswordForm } from "@/components/profile/forms";
 
 const CONTACT = "contacto.felipe.kreulich@gmail.com";
 
@@ -72,6 +72,12 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
 
       <Section n="03" title={t("security")}>
         <PasswordForm />
+      </Section>
+
+      <Section n="04" title={t("dangerZone")}>
+        {user.role === "ADMIN"
+          ? <p className="text-sm text-muted-foreground">{t("adminCantDelete")}</p>
+          : <DeleteAccountForm />}
       </Section>
     </div>
   );

@@ -5,6 +5,7 @@ import { Link } from "@/i18n/routing";
 import { Logo } from "@/components/logo";
 import { LocaleSwitch } from "./locale-switch";
 import { site } from "@/lib/site";
+import { CookieSettingsLink } from "./cookie-consent";
 
 export async function Footer() {
   const t = await getTranslations("footer");
@@ -60,6 +61,11 @@ export async function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t py-6 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:flex-row">
           <span>© {new Date().getFullYear()} {site.name}</span>
+          <nav aria-label={t("legal")} className="flex items-center gap-4">
+            <Link href="/terms" className={link}>{t("terms")}</Link>
+            <Link href="/privacy" className={link}>{t("privacy")}</Link>
+            <CookieSettingsLink className={link} />
+          </nav>
           <span>{t.rich("printed", { heart: () => <span className="text-accent">♥</span> })}</span>
           <LocaleSwitch />
         </div>

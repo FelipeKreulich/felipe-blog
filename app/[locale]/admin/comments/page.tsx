@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/admin";
 import { Link } from "@/i18n/routing";
 import { db } from "@/lib/db";
 import { adminDeleteComment } from "@/lib/admin-actions";
@@ -5,6 +6,7 @@ import { ActionButton } from "@/components/admin/action-button";
 import { Badge } from "@/components/admin/ui";
 
 export default async function AdminComments() {
+  await requireAdmin(); // não depender só do layout: página e layout renderizam em paralelo
   const comments = await db.comment.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -24,8 +26,8 @@ export default async function AdminComments() {
           <li key={c.id} className="grid gap-3 py-5 sm:grid-cols-[1fr_auto]">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                <span className="text-foreground">{c.user.name ?? "—"}</span>
-                <span>{c.user.email}</span>
+                <span className="text-foreground">{c.user?.name ?? "Conta removida"}</span>
+                {c.user && <span>{c.user.email}</span>}
                 <span>· {fmt.format(c.createdAt)}</span>
                 {c.parentId && <Badge>Resposta</Badge>}
                 {c.deletedAt && <Badge tone="accent">Removido</Badge>}

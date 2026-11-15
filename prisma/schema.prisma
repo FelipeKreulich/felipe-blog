@@ -131,10 +131,10 @@ model Comment {
   createdAt DateTime  @default(now())
   deletedAt DateTime? // removido com respostas: mantém a linha para não apagar respostas de outros
   postId    String
-  userId    String
+  userId    String? // null = conta apagada (comentário fica anônimo, respostas de outros preservadas)
   parentId  String?
   post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   parent    Comment?  @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("Replies")
 
@@ -168,4 +168,16 @@ model Media {
   data      Bytes
   mime      String
   createdAt DateTime @default(now())
+}
+
+// Páginas institucionais escritas pelo admin (termos, privacidade), uma linha por idioma.
+model Page {
+  id        String   @id @default(cuid())
+  key       String // "terms" | "privacy"
+  locale    Locale
+  title     String
+  content   String // Markdown
+  updatedAt DateTime @updatedAt
+
+  @@unique([key, locale])
 }
