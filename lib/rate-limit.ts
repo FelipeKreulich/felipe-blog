@@ -26,12 +26,9 @@ export async function hit(key: string, limit: number, windowSec: number): Promis
 
 export const clear = (key: string) => db.rateLimit.deleteMany({ where: { key } });
 
-// Só consulta (não incrementa): permite contar apenas falhas.
-export async function peek(key: string, limit: number): Promise<{ ok: boolean; retryAfter: number }> {
-  const r = await db.rateLimit.findUnique({ where: { key } });
-  if (!r || r.resetAt < new Date()) return { ok: true, retryAfter: 0 };
-  return { ok: r.count < limit, retryAfter: Math.ceil((r.resetAt.getTime() - Date.now()) / 1000) };
-}
+// Devolve uma tentativa reservada com hit() (ex.: login certo), mantendo "conta só falhas" sem corrida.
+export const release = (key: string) =>
+  db.$executeRaw`UPDATE "RateLimit" SET "count" = GREATEST("count" - 1, 0) WHERE "key" = ${key}`;
 
 export const LIMITS = {
   // falhas de login: por IP, por IP+e-mail (apertado, não trava a conta para os outros) e um teto
