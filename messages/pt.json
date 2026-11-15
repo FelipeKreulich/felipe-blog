@@ -22,14 +22,15 @@
   },
   "editor": {
     "kicker": "Do editor",
-    "role": "Editor-chefe",
-    "portraitAlt": "Retrato de Felipe Kreulich em estilo de jornal",
     "title": "Um jornal escrito por quem <em>ama</em> tecnologia.",
     "intro": "Este espaço nasceu de uma vontade simples: ter um lugar meu para pensar em voz alta sobre tecnologia. Aqui você encontra três coisas:",
     "item1": "Notícias de tecnologia que valem a leitura — filtradas, comentadas e sem pressa.",
     "item2": "Notas dos meus estudos, compartilhadas enquanto aprendo, com erros e acertos.",
     "item3": "Ensaios e opiniões sobre o ofício de construir software.",
-    "closing": "Tudo feito com amor e carinho pela tecnologia — e por quem, como eu, gosta de entender como as coisas funcionam. Obrigado por ler."
+    "closing": "Tudo feito com amor e carinho pela tecnologia — e por quem, como eu, gosta de entender como as coisas funcionam. Obrigado por ler.",
+    "illustrationAlt": "Ilustração de uma mesa com máquina de escrever, caderno de estudos com um coração, jornal e café",
+    "captionLeft": "A redação",
+    "captionRight": "Notícias · Notas · Ensaios"
   },
   "newsletter": {
     "kicker": "Newsletter",

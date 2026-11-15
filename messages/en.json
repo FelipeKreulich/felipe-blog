@@ -22,14 +22,15 @@
   },
   "editor": {
     "kicker": "From the editor",
-    "role": "Editor-in-chief",
-    "portraitAlt": "Newspaper-style portrait of Felipe Kreulich",
     "title": "A newspaper written by someone who <em>loves</em> technology.",
     "intro": "This space was born from a simple wish: a place of my own to think out loud about technology. Here you'll find three things:",
     "item1": "Tech news worth reading — filtered, commented on, and unhurried.",
     "item2": "Notes from my studies, shared while I learn, mistakes included.",
     "item3": "Essays and opinions on the craft of building software.",
-    "closing": "All made with love and care for technology — and for anyone who, like me, enjoys understanding how things work. Thanks for reading."
+    "closing": "All made with love and care for technology — and for anyone who, like me, enjoys understanding how things work. Thanks for reading.",
+    "illustrationAlt": "Illustration of a desk with a typewriter, a study notebook with a heart, a newspaper and coffee",
+    "captionLeft": "The newsroom",
+    "captionRight": "News · Notes · Essays"
   },
   "newsletter": {
     "kicker": "Newsletter",

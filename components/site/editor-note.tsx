@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
-const PORTRAIT = "/editor/engraving.jpg";
+const ILLUSTRATION = "/editor/desk.jpg";
 
 export async function EditorNote() {
   const t = await getTranslations("editor");
@@ -17,11 +17,11 @@ export async function EditorNote() {
       <div className="grid gap-10 pt-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-14">
         <figure className="space-y-3">
           <div className="relative aspect-[4/5] overflow-hidden border">
-            <Image src={PORTRAIT} alt={t("portraitAlt")} fill sizes="(min-width: 768px) 460px, 100vw" className="object-cover" />
+            <Image src={ILLUSTRATION} alt={t("illustrationAlt")} fill sizes="(min-width: 768px) 460px, 100vw" className="object-cover" />
           </div>
           <figcaption className="flex justify-between font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            <span className="text-foreground">Felipe Kreulich</span>
-            <span>{t("role")}</span>
+            <span className="text-foreground">{t("captionLeft")}</span>
+            <span>{t("captionRight")}</span>
           </figcaption>
         </figure>
 
