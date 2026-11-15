@@ -19,15 +19,21 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'master' && 'production' || 'development' }}
-    # no job inteiro: o postinstall (prisma generate) já lê o prisma.config.ts, que exige DATABASE_URL
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # sem scripts de instalação: pacotes de terceiros nunca rodam com o secret no ambiente
+      - run: npm ci --ignore-scripts
+      # generate não conecta no banco; a URL falsa só satisfaz o env() do prisma.config.ts
+      - name: prisma generate
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://build:build@localhost:5432/build
+      # o secret existe SÓ neste passo
       - name: prisma migrate deploy
         run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
