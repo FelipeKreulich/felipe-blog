@@ -1,8 +1,7 @@
 {
   "site": {
     "tagline": "News, essays and notes on technology",
-    "edition": "Edition",
-    "allRights": "All rights reserved."
+    "edition": "Edition"
   },
   "nav": {
     "home": "Home",
@@ -65,7 +64,6 @@
     "support": "Support",
     "supportBody": "Enjoying the content? A coffee helps keep the editions coming.",
     "coffee": "Buy me a coffee",
-    "rights": "All rights reserved",
     "printed": "Printed with <heart></heart> in Next.js"
   },
   "post": {

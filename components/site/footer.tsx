@@ -59,7 +59,7 @@ export async function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t py-6 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} {site.name} · {t("rights")}</span>
+          <span>© {new Date().getFullYear()} {site.name}</span>
           <span>{t.rich("printed", { heart: () => <span className="text-accent">♥</span> })}</span>
           <LocaleSwitch />
         </div>

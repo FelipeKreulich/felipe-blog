@@ -1,8 +1,7 @@
 {
   "site": {
     "tagline": "Notícias, ensaios e notas sobre tecnologia",
-    "edition": "Edição",
-    "allRights": "Todos os direitos reservados."
+    "edition": "Edição"
   },
   "nav": {
     "home": "Início",
@@ -65,7 +64,6 @@
     "support": "Apoie",
     "supportBody": "Gostou do conteúdo? Um café ajuda a manter as edições saindo.",
     "coffee": "Me pague um café",
-    "rights": "Todos os direitos reservados",
     "printed": "Impresso com <heart></heart> em Next.js"
   },
   "post": {
