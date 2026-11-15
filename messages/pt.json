@@ -55,7 +55,11 @@
     "invalidBody": "Este link expirou ou já foi usado. Tente assinar de novo.",
     "unsubTitle": "Assinatura cancelada",
     "unsubBody": "Você não vai mais receber nossos e-mails. Volte quando quiser.",
-    "back": "Voltar ao início"
+    "back": "Voltar ao início",
+    "linkTitle": "Vincular assinatura à sua conta",
+    "linkBody": "Confirme para gerenciar pelo seu perfil a assinatura de {email}. Se não foi você quem pediu, ignore esta página.",
+    "linkCta": "Vincular à minha conta",
+    "linkDone": "Pronto! A assinatura agora aparece no seu perfil."
   },
   "footer": {
     "about": "Notícias de tecnologia, notas de estudo e ensaios — escritos com carinho por quem ama entender como as coisas funcionam.",

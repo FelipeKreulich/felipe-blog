@@ -55,7 +55,11 @@
     "invalidBody": "This link has expired or was already used. Try subscribing again.",
     "unsubTitle": "Unsubscribed",
     "unsubBody": "You won't receive our emails anymore. Come back anytime.",
-    "back": "Back to home"
+    "back": "Back to home",
+    "linkTitle": "Link your subscription to your account",
+    "linkBody": "Confirm to manage the subscription for {email} from your profile. If you didn't request this, just ignore this page.",
+    "linkCta": "Link to my account",
+    "linkDone": "Done! The subscription now shows up in your profile."
   },
   "footer": {
     "about": "Tech news, study notes and essays — written with care by someone who loves understanding how things work.",

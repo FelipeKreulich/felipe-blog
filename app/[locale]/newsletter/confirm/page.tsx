@@ -10,17 +10,9 @@ export default async function Confirm({ params, searchParams }: PageProps<"/[loc
   setRequestLocale(locale);
   const t = await getTranslations("newsletter");
   const token = (await searchParams).token;
-  // Clicar no link prova a posse do e-mail: confirma e, se o pedido veio do perfil, vincula à conta.
+  // Só confirma a assinatura (double opt-in). Vincular a uma conta é outro fluxo (/newsletter/link).
   const sub = typeof token === "string" ? await db.subscriber.findUnique({ where: { token } }) : null;
-  if (sub && (!sub.confirmedAt || sub.linkUserId)) {
-    await db.$transaction([
-      ...(sub.linkUserId ? [db.subscriber.updateMany({ where: { userId: sub.linkUserId, NOT: { id: sub.id } }, data: { userId: null } })] : []),
-      db.subscriber.update({
-        where: { id: sub.id },
-        data: { confirmedAt: sub.confirmedAt ?? new Date(), ...(sub.linkUserId ? { userId: sub.linkUserId, linkUserId: null } : {}) },
-      }),
-    ]);
-  }
+  if (sub && !sub.confirmedAt) await db.subscriber.update({ where: { id: sub.id }, data: { confirmedAt: new Date() } });
   const ok = !!sub;
 
   return (

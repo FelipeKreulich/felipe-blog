@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "admin:create": "tsx --env-file=.env scripts/create-admin.ts",
     "content:publish": "tsx --env-file-if-exists=.env scripts/publish-content.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

@@ -66,7 +66,7 @@ git clone https://github.com/FelipeKreulich/felipe-blog.git
 cd felipe-blog
 npm install
 cp .env.example .env        # preencha as variáveis abaixo
-npx prisma migrate deploy   # cria as tabelas
+npm run db:migrate          # cria as tabelas (prisma migrate deploy)
 npm run admin:create -- voce@email.com   # sua conta de admin (a senha é pedida no terminal)
 npm run content:publish     # publica os artigos e as páginas legais de content/
 npm run dev
@@ -90,6 +90,7 @@ Abra [http://localhost:3000](http://localhost:3000).
 |---|---|
 | `npm run dev` | Servidor de desenvolvimento |
 | `npm run build` / `npm start` | Build e servidor de produção |
+| `npm run db:migrate` | Aplica as migrations pendentes (rode antes de publicar mudanças de schema) |
 | `npm run admin:create -- email` | Cria ou promove a conta de admin |
 | `npm run content:publish` | Publica `content/` no banco (só cria o que falta) |
 | `npm run content:publish -- --update` | Regrava os posts a partir dos arquivos |

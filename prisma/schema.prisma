@@ -163,6 +163,8 @@ model Subscriber {
   // linkUserId = pedido feito pelo perfil, aguardando confirmação; userId = vínculo comprovado.
   userId      String?   @unique
   linkUserId  String?
+  linkToken   String?   @unique // uso único, só para vincular à conta; expira em linkExpiresAt
+  linkExpiresAt DateTime?
   createdAt   DateTime  @default(now())
 }
 

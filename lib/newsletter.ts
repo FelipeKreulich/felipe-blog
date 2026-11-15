@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { randomBytes } from "node:crypto";
 import { Resend } from "resend";
 import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
@@ -28,11 +29,18 @@ export async function subscribeEmail(form: FormData, linkUserId: string | null):
   const existing = await db.subscriber.findUnique({ where: { email } });
   if (existing?.confirmedAt && !linkUserId) return { status: "ok", message: t("already") };
 
+  // Pedido de vínculo (perfil): token próprio, de uso único, que expira em 24h. Um pedido novo
+  // substitui o anterior (o token velho deixa de valer). Nunca reusa o token de confirmar/cancelar.
+  const linkData = linkUserId
+    ? { linkUserId, linkToken: randomBytes(24).toString("base64url"), linkExpiresAt: new Date(Date.now() + 864e5) }
+    : {};
   const sub = existing
-    ? (linkUserId ? await db.subscriber.update({ where: { id: existing.id }, data: { linkUserId } }) : existing)
-    : await db.subscriber.create({ data: { email, locale, linkUserId } });
+    ? (linkUserId ? await db.subscriber.update({ where: { id: existing.id }, data: linkData }) : existing)
+    : await db.subscriber.create({ data: { email, locale, ...linkData } });
   const base = `${site.url}${locale === "pt" ? "" : "/en"}`;
-  const link = `${base}/newsletter/confirm?token=${sub.token}`;
+  const link = sub.linkToken && linkUserId
+    ? `${base}/newsletter/link?token=${sub.linkToken}`
+    : `${base}/newsletter/confirm?token=${sub.token}`;
 
   try {
     const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({
@@ -51,4 +59,20 @@ export async function subscribeEmail(form: FormData, linkUserId: string | null):
     return { status: "error", message: t("sendFailed") };
   }
   return { status: "ok", message: t("checkInbox") };
+}
+
+// Conclui o vínculo assinatura↔conta. Só via POST (botão na página), nunca ao abrir o link:
+// scanners de e-mail que "clicam" em links não conseguem vincular nada.
+export async function completeLink(token: string): Promise<{ ok: boolean }> {
+  if (typeof token !== "string" || token.length < 20) return { ok: false };
+  const sub = await db.subscriber.findUnique({ where: { linkToken: token } });
+  if (!sub?.linkUserId || !sub.linkExpiresAt || sub.linkExpiresAt < new Date()) return { ok: false };
+  await db.$transaction([
+    db.subscriber.updateMany({ where: { userId: sub.linkUserId, NOT: { id: sub.id } }, data: { userId: null } }),
+    db.subscriber.update({
+      where: { id: sub.id },
+      data: { confirmedAt: sub.confirmedAt ?? new Date(), userId: sub.linkUserId, linkUserId: null, linkToken: null, linkExpiresAt: null },
+    }),
+  ]);
+  return { ok: true };
 }
