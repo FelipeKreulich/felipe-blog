@@ -32,6 +32,7 @@ model User {
   image         String?
   passwordHash  String?
   role          Role      @default(READER)
+  sessionVersion Int      @default(0) // incrementar invalida todas as sessões JWT emitidas antes
   createdAt     DateTime  @default(now())
 
   accounts Account[]

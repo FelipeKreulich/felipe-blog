@@ -29,18 +29,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await db.user.findUnique({ where: { email: parsed.data.email } });
         const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? getDummyHash());
         if (!user || !ok) throw new InvalidLogin();
-        return { id: user.id, name: user.name, email: user.email, role: user.role };
+        return { id: user.id, name: user.name, email: user.email, role: user.role, sessionVersion: user.sessionVersion };
       },
     }),
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) { token.id = user.id!; token.role = user.role; }
+      if (user) { token.id = user.id!; token.role = user.role; token.sv = user.sessionVersion ?? 0; }
       return token;
     },
     session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
+      session.user.sv = token.sv ?? 0;
       return session;
     },
   },

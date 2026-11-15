@@ -160,7 +160,7 @@
     "weakPassword": "A nova senha precisa ter de 8 a 128 caracteres.",
     "passwordMismatch": "As senhas não conferem.",
     "wrongPassword": "Senha atual incorreta.",
-    "passwordSaved": "Senha alterada.",
+    "passwordSaved": "Senha alterada. Os outros aparelhos foram desconectados.",
     "noFile": "Escolha uma imagem.",
     "fileTooBig": "Imagem muito grande.",
     "badFile": "Formato de imagem não suportado.",
@@ -172,7 +172,9 @@
     "deleteCta": "Apagar minha conta",
     "confirmRequired": "Confirme que entende que é permanente.",
     "adminCantDelete": "Contas de administrador não podem ser apagadas por aqui.",
-    "accountDeleted": "Sua conta foi apagada. Obrigado por ter lido o The Commit Times."
+    "accountDeleted": "Sua conta foi apagada. Obrigado por ter lido o The Commit Times.",
+    "everywhere": "Sair de todos os dispositivos",
+    "everywhereHint": "Encerra sua sessão em todos os aparelhos, inclusive este. Útil se você entrou num computador que não é seu."
   },
   "legal": {
     "kicker": "Institucional",

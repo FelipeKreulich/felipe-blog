@@ -4,7 +4,7 @@ import { Mail } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
 import { redirect } from "@/i18n/routing";
 import { Avatar } from "@/components/site/avatar";
-import { AvatarForm, DeleteAccountForm, NameForm, PasswordForm } from "@/components/profile/forms";
+import { AvatarForm, DeleteAccountForm, NameForm, PasswordForm, SignOutEverywhere } from "@/components/profile/forms";
 
 const CONTACT = "contacto.felipe.kreulich@gmail.com";
 
@@ -24,8 +24,9 @@ function Section({ n, title, children }: { n: string; title: string; children: R
   );
 }
 
-export default async function ProfilePage({ params }: PageProps<"/[locale]/profile">) {
+export default async function ProfilePage({ params, searchParams }: PageProps<"/[locale]/profile">) {
   const { locale } = await params;
+  const passwordChanged = (await searchParams).password === "changed";
   setRequestLocale(locale);
   const user = await getCurrentUser();
   if (!user) return redirect({ href: { pathname: "/signin", query: { next: "/profile" } }, locale });
@@ -71,7 +72,11 @@ export default async function ProfilePage({ params }: PageProps<"/[locale]/profi
       </Section>
 
       <Section n="03" title={t("security")}>
-        <PasswordForm />
+        <div className="space-y-8">
+          {passwordChanged && <p role="status" className="border-l-2 border-accent bg-card p-4 text-sm">{t("passwordSaved")}</p>}
+          <PasswordForm />
+          <SignOutEverywhere />
+        </div>
       </Section>
 
       <Section n="04" title={t("dangerZone")}>

@@ -160,7 +160,7 @@
     "weakPassword": "The new password must be 8 to 128 characters.",
     "passwordMismatch": "Passwords don't match.",
     "wrongPassword": "Current password is incorrect.",
-    "passwordSaved": "Password changed.",
+    "passwordSaved": "Password changed. Your other devices were signed out.",
     "noFile": "Choose an image.",
     "fileTooBig": "Image is too large.",
     "badFile": "Unsupported image format.",
@@ -172,7 +172,9 @@
     "deleteCta": "Delete my account",
     "confirmRequired": "Confirm you understand this is permanent.",
     "adminCantDelete": "Administrator accounts can't be deleted from here.",
-    "accountDeleted": "Your account was deleted. Thanks for reading The Commit Times."
+    "accountDeleted": "Your account was deleted. Thanks for reading The Commit Times.",
+    "everywhere": "Sign out of all devices",
+    "everywhereHint": "Ends your session on every device, including this one. Useful if you signed in on a computer that isn't yours."
   },
   "legal": {
     "kicker": "Legal",

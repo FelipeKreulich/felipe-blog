@@ -3,7 +3,7 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Camera, Loader2 } from "lucide-react";
 import { Field, submitClass } from "@/components/auth/auth-shell";
-import { changePassword, deleteAccount, removeAvatar, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
+import { changePassword, deleteAccount, removeAvatar, signOutEverywhere, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
 
 function Status({ s }: { s: ProfileState }) {
   return (
@@ -123,5 +123,19 @@ export function DeleteAccountForm() {
         </button>
       </div>
     </form>
+  );
+}
+
+export function SignOutEverywhere() {
+  const t = useTranslations("profile");
+  const [pending, start] = useTransition();
+  return (
+    <div className="space-y-3 border-t pt-8">
+      <p className="text-sm leading-relaxed text-muted-foreground">{t("everywhereHint")}</p>
+      <button type="button" disabled={pending} onClick={() => start(() => signOutEverywhere())}
+        className="inline-flex items-center gap-2 border border-foreground px-4 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background disabled:opacity-50">
+        {pending && <Loader2 className="size-3.5 animate-spin" />}{t("everywhere")}
+      </button>
+    </div>
   );
 }

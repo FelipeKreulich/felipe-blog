@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/current-user";
-import { signOut } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 
@@ -39,8 +39,19 @@ export async function changePassword(_: ProfileState, form: FormData): Promise<P
     return { error: field === "confirm" ? t("passwordMismatch") : t("weakPassword") };
   }
   if (!(await bcrypt.compare(parsed.data.current, user.passwordHash))) return { error: t("wrongPassword") };
-  await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(parsed.data.next, 12) } });
-  return { ok: t("passwordSaved") };
+  // Nova senha + nova versão de sessão: todos os outros aparelhos caem.
+  await db.user.update({
+    where: { id: user.id },
+    data: { passwordHash: await bcrypt.hash(parsed.data.next, 12), sessionVersion: { increment: 1 } },
+  });
+  // Reemite a sessão deste aparelho com a versão nova (sem obrigar a entrar de novo) e redireciona:
+  // a renderização dentro desta mesma request ainda leria o cookie antigo e pareceria deslogada.
+  const locale = await getLocale();
+  await signIn("credentials", {
+    email: user.email, password: parsed.data.next,
+    redirectTo: `${locale === "pt" ? "" : `/${locale}`}/profile?password=changed`,
+  });
+  return {};
 }
 
 const MAX_BYTES = 300 * 1024;
@@ -86,4 +97,13 @@ export async function deleteAccount(_: ProfileState, form: FormData): Promise<Pr
   const locale = await getLocale();
   await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/?account=deleted` });
   return {};
+}
+
+// "Sair de todos os dispositivos": invalida todas as sessões (inclusive esta) e vai para o login.
+export async function signOutEverywhere(): Promise<void> {
+  const user = await me();
+  if (!user) return;
+  await db.user.update({ where: { id: user.id }, data: { sessionVersion: { increment: 1 } } });
+  const locale = await getLocale();
+  await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/signin` });
 }
