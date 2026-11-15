@@ -19,6 +19,9 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'master' && 'production' || 'development' }}
+    # no job inteiro: o postinstall (prisma generate) já lê o prisma.config.ts, que exige DATABASE_URL
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,5 +31,3 @@ jobs:
       - run: npm ci
       - name: prisma migrate deploy
         run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}

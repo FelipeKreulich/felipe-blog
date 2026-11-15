@@ -25,13 +25,17 @@ export async function subscribeEmail(form: FormData, linkUserId: string | null):
   if (!parsed.success) return { status: "error", message: t("invalid") };
 
   const { email } = parsed.data;
-  // limite por IP e por e-mail; mensagem genérica, não revela nada sobre o endereço
-  const [byIp, byEmail] = await Promise.all([hit(`nl:ip:${await clientIp()}`, 5, 3600), hit(`nl:email:${email}`, 3, 3600)]);
-  if (!byIp.ok || !byEmail.ok) return { status: "error", message: t("rateLimited") };
+  // limite por IP (principal) em toda tentativa; mensagem genérica, não revela nada sobre o endereço
+  if (!(await hit(`nl:ip:${await clientIp()}`, 5, 3600)).ok) return { status: "error", message: t("rateLimited") };
 
   const existing = await db.subscriber.findUnique({ where: { email } });
   // já confirmado: mesma resposta de sempre e nenhum e-mail novo (evita enumeração)
   if (existing?.confirmedAt && !linkUserId) return { status: "ok", message: t("checkInbox") };
+
+  // limite por destinatário só quando um e-mail vai mesmo sair (protege a vítima de bombardeio).
+  // Pedido do próprio perfil usa chave separada: tentativas anônimas não bloqueiam o dono logado.
+  const emailKey = linkUserId ? `nl:email:${email}:user:${linkUserId}` : `nl:email:${email}`;
+  if (!(await hit(emailKey, 3, 3600)).ok) return { status: "error", message: t("rateLimited") };
 
   // Pedido de vínculo (perfil): token próprio, de uso único, que expira em 24h. Um pedido novo
   // substitui o anterior (o token velho deixa de valer). Nunca reusa o token de confirmar/cancelar.
