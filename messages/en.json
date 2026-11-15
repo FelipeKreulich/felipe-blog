@@ -70,5 +70,60 @@
     "back": "Back",
     "by": "By",
     "stats": "{likes, plural, =0 {No likes} one {# like} other {# likes}} · {comments, plural, =0 {no comments} one {# comment} other {# comments}}"
+  },
+  "auth": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "signinKicker": "Reader credentials",
+    "signinTitle": "Sign in",
+    "signinLead": "Sign in to like and comment on editions.",
+    "signInCta": "Sign in",
+    "signinSwitch": "Don't have an account?",
+    "signupLink": "Create account",
+    "signupKicker": "New reader",
+    "signupTitle": "Create account",
+    "signupLead": "Reading is free. An account is only for liking and commenting.",
+    "signUpCta": "Create account",
+    "signupSwitch": "Already have an account?",
+    "signinLink": "Sign in",
+    "invalidLogin": "Incorrect email or password.",
+    "weakPassword": "Password must be 8 to 128 characters.",
+    "invalidName": "Enter a name with at least 2 letters.",
+    "invalidEmail": "Invalid email.",
+    "emailTaken": "An account with this email already exists.",
+    "signOut": "Sign out"
+  },
+  "status": {
+    "notFoundCode": "Error 404 · Page not found",
+    "notFoundTitle": "This story didn't make the edition.",
+    "notFoundLead": "The page you're looking for doesn't exist, has moved, or was never printed.",
+    "home": "Back to home",
+    "archive": "See all editions",
+    "errorCode": "Error · Something went wrong",
+    "errorTitle": "The press stopped.",
+    "errorLead": "We had a problem putting this page together. Please try again in a moment.",
+    "retry": "Try again"
+  },
+  "comments": {
+    "title": "{n, plural, =0 {Comments} one {# comment} other {# comments}}",
+    "label": "Your comment",
+    "placeholder": "Write a comment…",
+    "replyPlaceholder": "Write a reply…",
+    "submit": "Comment",
+    "reply": "Reply",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "empty": "Be the first to comment.",
+    "signInLink": "Sign in",
+    "signInSuffix": "to join the conversation.",
+    "needAuth": "Sign in to comment.",
+    "invalid": "Invalid comment (1 to 2000 characters).",
+    "tooFast": "Easy! Wait a minute before commenting again."
+  },
+  "likes": {
+    "count": "{n, plural, =0 {Like} one {# like} other {# likes}}",
+    "signIn": "Sign in to like"
   }
 }

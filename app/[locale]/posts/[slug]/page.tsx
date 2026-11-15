@@ -6,6 +6,10 @@ import { ArrowLeft } from "lucide-react";
 import { Link, redirect } from "@/i18n/routing";
 import { getPost } from "@/lib/post";
 import { renderMarkdown } from "@/lib/markdown";
+import { auth } from "@/auth";
+import { db } from "@/lib/db";
+import { LikeButton } from "@/components/post/like-button";
+import { Comments } from "@/components/post/comments";
 
 export const revalidate = 60;
 
@@ -31,7 +35,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
   const { tr, post } = r;
   const t = await getTranslations("post");
   const th = await getTranslations("home");
-  const html = await renderMarkdown(tr.content);
+  const session = await auth();
+  const [html, liked] = await Promise.all([
+    renderMarkdown(tr.content),
+    session?.user ? db.like.findUnique({ where: { postId_userId: { postId: post.id, userId: session.user.id } } }).then(Boolean) : false,
+  ]);
   const date = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { dateStyle: "long" }).format(post.publishedAt!);
   const minutes = Math.max(1, Math.round(tr.content.split(/\s+/).length / 220));
 
@@ -59,9 +67,14 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
       )}
 
       <div className="article prose prose-lg mx-auto max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
-
-      <footer className="mx-auto max-w-[68ch] border-t pt-6 text-lg"><p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-        {t("stats", { likes: post._count.likes, comments: post._count.comments })}</p>
+      <footer className="mx-auto max-w-[68ch] space-y-14 border-t pt-8 text-lg">
+        <div className="flex items-center justify-between gap-4">
+          <LikeButton postId={post.id} liked={liked} count={post._count.likes} signedIn={!!session?.user} />
+          <a href="#comments" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
+            {t("stats", { likes: post._count.likes, comments: post._count.comments })}
+          </a>
+        </div>
+        <Comments postId={post.id} path={`/posts/${tr.slug}`} />
       </footer>
     </article>
   );

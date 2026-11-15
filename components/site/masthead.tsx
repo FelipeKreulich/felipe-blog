@@ -4,6 +4,7 @@ import { Logo } from "@/components/logo";
 import { ThemeToggle } from "./theme-toggle";
 import { LocaleSwitch } from "./locale-switch";
 import { Clock } from "./clock";
+import { UserMenu } from "./user-menu";
 
 export async function Masthead() {
   const locale = await getLocale();
@@ -22,7 +23,7 @@ export async function Masthead() {
         <div className="flex items-center gap-3">
           <LocaleSwitch />
           <ThemeToggle />
-          <Link href="/signin" className="transition-colors hover:text-foreground">{t("nav.signIn")}</Link>
+          <UserMenu />
         </div>
       </div>
       <div className="border-y border-foreground/80 py-5 sm:py-7">

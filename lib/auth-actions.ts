@@ -1,0 +1,52 @@
+"use server";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { AuthError } from "next-auth";
+import { getLocale, getTranslations } from "next-intl/server";
+import { signIn, signOut, credentialsSchema } from "@/auth";
+import { db } from "@/lib/db";
+
+// Devolve os campos digitados para o form não perder o que o leitor escreveu (React 19 reseta o form após a action).
+export type AuthState = { error?: string; email?: string; name?: string };
+
+// Só aceita caminhos internos como destino pós-login (evita open redirect) e mantém o idioma atual.
+async function safeNext(v: FormDataEntryValue | null) {
+  const path = typeof v === "string" && v.startsWith("/") && !v.startsWith("//") ? v : "/";
+  const locale = await getLocale();
+  if (locale === "pt" || path === `/${locale}` || path.startsWith(`/${locale}/`)) return path;
+  return path === "/" ? `/${locale}` : `/${locale}${path}`;
+}
+
+export async function signInAction(_: AuthState, form: FormData): Promise<AuthState> {
+  const t = await getTranslations("auth");
+  try {
+    await signIn("credentials", { email: form.get("email"), password: form.get("password"), redirectTo: await safeNext(form.get("next")) });
+  } catch (e) {
+    if (e instanceof AuthError) return { error: t("invalidLogin"), email: String(form.get("email") ?? "") };
+    throw e; // redirect do Next precisa propagar
+  }
+  return {};
+}
+
+const signUpSchema = credentialsSchema.extend({ name: z.string().trim().min(2).max(60) });
+
+export async function signUpAction(_: AuthState, form: FormData): Promise<AuthState> {
+  const t = await getTranslations("auth");
+  const keep = { email: String(form.get("email") ?? ""), name: String(form.get("name") ?? "") };
+  const parsed = signUpSchema.safeParse({ name: form.get("name"), email: form.get("email"), password: form.get("password") });
+  if (!parsed.success) {
+    const field = parsed.error.issues[0]?.path[0];
+    return { ...keep, error: field === "password" ? t("weakPassword") : field === "name" ? t("invalidName") : t("invalidEmail") };
+  }
+  const { name, email, password } = parsed.data;
+  if (await db.user.findUnique({ where: { email } })) return { ...keep, error: t("emailTaken") };
+
+  await db.user.create({ data: { name, email, passwordHash: await bcrypt.hash(password, 12) } });
+  await signIn("credentials", { email, password, redirectTo: await safeNext(form.get("next")) });
+  return {};
+}
+
+export async function signOutAction() {
+  const locale = await getLocale();
+  await signOut({ redirectTo: locale === "pt" ? "/" : `/${locale}` });
+}

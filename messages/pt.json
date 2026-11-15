@@ -70,5 +70,60 @@
     "back": "Voltar",
     "by": "Por",
     "stats": "{likes, plural, =0 {Nenhuma curtida} one {# curtida} other {# curtidas}} · {comments, plural, =0 {nenhum comentário} one {# comentário} other {# comentários}}"
+  },
+  "auth": {
+    "name": "Nome",
+    "email": "E-mail",
+    "password": "Senha",
+    "passwordHint": "Mínimo de 8 caracteres.",
+    "signinKicker": "Credencial de leitor",
+    "signinTitle": "Entrar",
+    "signinLead": "Entre para curtir e comentar nas edições.",
+    "signInCta": "Entrar",
+    "signinSwitch": "Ainda não tem conta?",
+    "signupLink": "Criar conta",
+    "signupKicker": "Novo leitor",
+    "signupTitle": "Criar conta",
+    "signupLead": "Ler é livre. A conta serve só para curtir e comentar.",
+    "signUpCta": "Criar conta",
+    "signupSwitch": "Já tem conta?",
+    "signinLink": "Entrar",
+    "invalidLogin": "E-mail ou senha incorretos.",
+    "weakPassword": "A senha precisa ter de 8 a 128 caracteres.",
+    "invalidName": "Informe um nome com pelo menos 2 letras.",
+    "invalidEmail": "E-mail inválido.",
+    "emailTaken": "Já existe uma conta com este e-mail.",
+    "signOut": "Sair"
+  },
+  "status": {
+    "notFoundCode": "Erro 404 · Página não encontrada",
+    "notFoundTitle": "Esta matéria saiu da edição.",
+    "notFoundLead": "A página que você procura não existe, mudou de endereço ou nunca foi impressa.",
+    "home": "Voltar ao início",
+    "archive": "Ver todas as edições",
+    "errorCode": "Erro · Algo deu errado",
+    "errorTitle": "A prensa parou.",
+    "errorLead": "Tivemos um problema ao montar esta página. Tente de novo em alguns instantes.",
+    "retry": "Tentar de novo"
+  },
+  "comments": {
+    "title": "{n, plural, =0 {Comentários} one {# comentário} other {# comentários}}",
+    "label": "Seu comentário",
+    "placeholder": "Escreva um comentário…",
+    "replyPlaceholder": "Escreva uma resposta…",
+    "submit": "Comentar",
+    "reply": "Responder",
+    "cancel": "Cancelar",
+    "delete": "Apagar",
+    "empty": "Seja o primeiro a comentar.",
+    "signInLink": "Entre",
+    "signInSuffix": "para participar da conversa.",
+    "needAuth": "Entre para comentar.",
+    "invalid": "Comentário inválido (1 a 2000 caracteres).",
+    "tooFast": "Calma! Aguarde um minuto antes de comentar de novo."
+  },
+  "likes": {
+    "count": "{n, plural, =0 {Curtir} one {# curtida} other {# curtidas}}",
+    "signIn": "Entre para curtir"
   }
 }
