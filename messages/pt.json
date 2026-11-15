@@ -67,5 +67,10 @@
     "coffee": "Me pague um café",
     "rights": "Todos os direitos reservados",
     "printed": "Impresso com <heart></heart> em Next.js"
+  },
+  "post": {
+    "back": "Voltar",
+    "by": "Por",
+    "stats": "{likes, plural, =0 {Nenhuma curtida} one {# curtida} other {# curtidas}} · {comments, plural, =0 {nenhum comentário} one {# comentário} other {# comentários}}"
   }
 }

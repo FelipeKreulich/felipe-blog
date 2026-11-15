@@ -67,5 +67,10 @@
     "coffee": "Buy me a coffee",
     "rights": "All rights reserved",
     "printed": "Printed with <heart></heart> in Next.js"
+  },
+  "post": {
+    "back": "Back",
+    "by": "By",
+    "stats": "{likes, plural, =0 {No likes} one {# like} other {# likes}} · {comments, plural, =0 {no comments} one {# comment} other {# comments}}"
   }
 }

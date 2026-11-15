@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "lenis/dist/lenis.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -162,3 +163,29 @@ html[data-preload] { overflow: hidden; }
   padding: 0.08em 0.12em 0 0;
   color: var(--accent);
 }
+
+/* Artigo: tipografia de jornal sobre os tokens do tema */
+.article {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-bullets: var(--accent);
+  --tw-prose-counters: var(--accent);
+  --tw-prose-hr: var(--border);
+  --tw-prose-pre-bg: var(--card);
+}
+.article h2, .article h3 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+.article h2 { font-size: 2.1em; }
+.article > p:first-of-type::first-letter {
+  float: left; font-family: var(--font-serif); font-size: 4.4em; line-height: 0.8;
+  padding: 0.08em 0.12em 0 0; color: var(--accent);
+}
+.article :not(pre) > code { background: var(--secondary); padding: 0.15em 0.35em; border-radius: 3px; font-weight: 400; }
+.article :not(pre) > code::before, .article :not(pre) > code::after { content: none; }
+.article pre { border: 1px solid var(--border); border-radius: 4px; font-size: 0.85em; }
+.article code[data-theme] span { color: var(--shiki-light); }
+.dark .article code[data-theme] span { color: var(--shiki-dark); }
