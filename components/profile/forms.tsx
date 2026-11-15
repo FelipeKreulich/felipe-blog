@@ -3,7 +3,7 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Camera, Loader2 } from "lucide-react";
 import { Field, submitClass } from "@/components/auth/auth-shell";
-import { changePassword, deleteAccount, removeAvatar, signOutEverywhere, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
+import { changePassword, deleteAccount, profileNewsletter, removeAvatar, signOutEverywhere, updateName, uploadAvatar, type ProfileState } from "@/lib/profile-actions";
 
 function Status({ s }: { s: ProfileState }) {
   return (
@@ -136,6 +136,25 @@ export function SignOutEverywhere() {
         className="inline-flex items-center gap-2 border border-foreground px-4 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background disabled:opacity-50">
         {pending && <Loader2 className="size-3.5 animate-spin" />}{t("everywhere")}
       </button>
+    </div>
+  );
+}
+
+export function NewsletterControl({ status }: { status: "confirmed" | "pending" | "none" }) {
+  const t = useTranslations("profile");
+  const [s, setS] = useState<ProfileState>({});
+  const [pending, start] = useTransition();
+  const act = (sub: boolean) => start(async () => setS(await profileNewsletter(sub)));
+  const btn = "inline-flex items-center gap-2 border border-foreground px-4 py-2 font-mono text-[11px] uppercase tracking-wider transition-colors hover:bg-foreground hover:text-background disabled:opacity-50";
+  return (
+    <div className="space-y-4">
+      <p className="text-sm leading-relaxed text-muted-foreground">{t(`nl_${status}`)}</p>
+      <div className="flex flex-wrap items-center gap-4">
+        {status === "none"
+          ? <button type="button" disabled={pending} onClick={() => act(true)} className={btn}>{pending && <Loader2 className="size-3.5 animate-spin" />}{t("nlSubscribe")}</button>
+          : <button type="button" disabled={pending} onClick={() => act(false)} className={btn}>{pending && <Loader2 className="size-3.5 animate-spin" />}{t("nlCancel")}</button>}
+        <Status s={s} />
+      </div>
     </div>
   );
 }

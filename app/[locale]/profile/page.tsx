@@ -4,7 +4,8 @@ import { Mail } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
 import { redirect } from "@/i18n/routing";
 import { Avatar } from "@/components/site/avatar";
-import { AvatarForm, DeleteAccountForm, NameForm, PasswordForm, SignOutEverywhere } from "@/components/profile/forms";
+import { AvatarForm, DeleteAccountForm, NameForm, NewsletterControl, PasswordForm, SignOutEverywhere } from "@/components/profile/forms";
+import { db } from "@/lib/db";
 
 const CONTACT = "contacto.felipe.kreulich@gmail.com";
 
@@ -32,6 +33,8 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
   if (!user) return redirect({ href: { pathname: "/signin", query: { next: "/profile" } }, locale });
 
   const t = await getTranslations("profile");
+  const sub = await db.subscriber.findUnique({ where: { email: user.email }, select: { confirmedAt: true } });
+  const nlStatus = !sub ? "none" : sub.confirmedAt ? "confirmed" : "pending";
   const since = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { month: "long", year: "numeric" }).format(user.createdAt);
   const subject = encodeURIComponent(t("emailSubject"));
 
@@ -79,7 +82,11 @@ export default async function ProfilePage({ params, searchParams }: PageProps<"/
         </div>
       </Section>
 
-      <Section n="04" title={t("dangerZone")}>
+      <Section n="04" title={t("newsletter")}>
+        <NewsletterControl status={nlStatus} />
+      </Section>
+
+      <Section n="05" title={t("dangerZone")}>
         {user.role === "ADMIN"
           ? <p className="text-sm text-muted-foreground">{t("adminCantDelete")}</p>
           : <DeleteAccountForm />}

@@ -175,7 +175,14 @@
     "adminCantDelete": "Contas de administrador não podem ser apagadas por aqui.",
     "accountDeleted": "Sua conta foi apagada. Obrigado por ter lido o The Commit Times.",
     "everywhere": "Sair de todos os dispositivos",
-    "everywhereHint": "Encerra sua sessão em todos os aparelhos, inclusive este. Útil se você entrou num computador que não é seu."
+    "everywhereHint": "Encerra sua sessão em todos os aparelhos, inclusive este. Útil se você entrou num computador que não é seu.",
+    "newsletter": "Newsletter",
+    "nl_confirmed": "Você recebe as novas edições por e-mail.",
+    "nl_pending": "Sua inscrição aguarda confirmação: procure o e-mail que enviamos.",
+    "nl_none": "Você não assina a newsletter. Receba um e-mail quando sair artigo novo.",
+    "nlSubscribe": "Assinar",
+    "nlCancel": "Cancelar assinatura",
+    "nlCancelled": "Assinatura cancelada."
   },
   "legal": {
     "kicker": "Institucional",

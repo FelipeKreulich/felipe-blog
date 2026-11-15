@@ -8,6 +8,7 @@ import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 import { deleteUserAccount } from "@/lib/account";
+import { subscribe } from "@/lib/newsletter";
 
 export type ProfileState = { ok?: string; error?: string };
 
@@ -103,4 +104,21 @@ export async function signOutEverywhere(): Promise<void> {
   await db.user.update({ where: { id: user.id }, data: { sessionVersion: { increment: 1 } } });
   const locale = await getLocale();
   await signOut({ redirectTo: `${locale === "pt" ? "" : `/${locale}`}/signin` });
+}
+
+// Newsletter pelo perfil (sempre com o e-mail da conta). Assinar passa pelo mesmo double opt-in.
+export async function profileNewsletter(subscribeIt: boolean): Promise<ProfileState> {
+  const t = await getTranslations("profile");
+  const user = await me();
+  if (!user) return { error: t("needAuth") };
+  if (!subscribeIt) {
+    await db.subscriber.deleteMany({ where: { email: user.email } });
+    revalidatePath("/", "layout");
+    return { ok: t("nlCancelled") };
+  }
+  const fd = new FormData();
+  fd.set("email", user.email);
+  const r = await subscribe({ status: "idle" }, fd);
+  revalidatePath("/", "layout");
+  return r.status === "error" ? { error: r.message } : { ok: r.message };
 }

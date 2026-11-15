@@ -175,7 +175,14 @@
     "adminCantDelete": "Administrator accounts can't be deleted from here.",
     "accountDeleted": "Your account was deleted. Thanks for reading The Commit Times.",
     "everywhere": "Sign out of all devices",
-    "everywhereHint": "Ends your session on every device, including this one. Useful if you signed in on a computer that isn't yours."
+    "everywhereHint": "Ends your session on every device, including this one. Useful if you signed in on a computer that isn't yours.",
+    "newsletter": "Newsletter",
+    "nl_confirmed": "You receive new editions by email.",
+    "nl_pending": "Your subscription is awaiting confirmation: check the email we sent.",
+    "nl_none": "You're not subscribed. Get an email whenever a new article is out.",
+    "nlSubscribe": "Subscribe",
+    "nlCancel": "Unsubscribe",
+    "nlCancelled": "Subscription cancelled."
   },
   "legal": {
     "kicker": "Legal",
