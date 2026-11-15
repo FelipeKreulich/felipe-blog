@@ -1,0 +1,71 @@
+{
+  "site": {
+    "tagline": "News, essays and notes on technology",
+    "edition": "Edition",
+    "allRights": "All rights reserved."
+  },
+  "nav": {
+    "home": "Home",
+    "signIn": "Sign in",
+    "theme": "Toggle theme",
+    "language": "Language"
+  },
+  "home": {
+    "latest": "Latest",
+    "empty": "No editions published yet. Check back soon.",
+    "readMore": "Read article",
+    "minRead": "{n} min read",
+    "seeMore": "See more"
+  },
+  "archive": {
+    "title": "All editions",
+    "kicker": "{n} articles published"
+  },
+  "editor": {
+    "kicker": "From the editor",
+    "role": "Editor-in-chief",
+    "portraitAlt": "Newspaper-style portrait of Felipe Kreulich",
+    "title": "A newspaper written by someone who <em>loves</em> technology.",
+    "intro": "This space was born from a simple wish: a place of my own to think out loud about technology. Here you'll find three things:",
+    "item1": "Tech news worth reading — filtered, commented on, and unhurried.",
+    "item2": "Notes from my studies, shared while I learn, mistakes included.",
+    "item3": "Essays and opinions on the craft of building software.",
+    "closing": "All made with love and care for technology — and for anyone who, like me, enjoys understanding how things work. Thanks for reading."
+  },
+  "newsletter": {
+    "kicker": "Newsletter",
+    "title": "The edition comes <em>to you</em>.",
+    "lead": "One email whenever a new article is out. No spam, no rush — unsubscribe anytime.",
+    "label": "Your email",
+    "placeholder": "you@email.com",
+    "cta": "Subscribe",
+    "privacy": "Your email is never shared with anyone.",
+    "invalid": "Invalid email.",
+    "already": "You're already subscribed. Thank you!",
+    "checkInbox": "Almost there! Confirm via the link in your inbox.",
+    "sendFailed": "Couldn't send right now. Please try again.",
+    "emailSubject": "Confirm your subscription — The Commit Times",
+    "emailBody": "Thanks for subscribing! Click the button below to confirm and start receiving new editions.",
+    "emailCta": "Confirm subscription",
+    "emailIgnore": "If this wasn't you, just ignore this email.",
+    "confirmedTitle": "Subscription confirmed",
+    "confirmedBody": "You'll receive the next editions in your inbox.",
+    "invalidTitle": "Invalid link",
+    "invalidBody": "This link has expired or was already used. Try subscribing again.",
+    "unsubTitle": "Unsubscribed",
+    "unsubBody": "You won't receive our emails anymore. Come back anytime.",
+    "back": "Back to home"
+  },
+  "footer": {
+    "about": "Tech news, study notes and essays — written with care by someone who loves understanding how things work.",
+    "sections": "Sections",
+    "home": "Home",
+    "archive": "All editions",
+    "follow": "Follow",
+    "support": "Support",
+    "supportBody": "Enjoying the content? A coffee helps keep the editions coming.",
+    "coffee": "Buy me a coffee",
+    "rights": "All rights reserved",
+    "printed": "Printed with <heart></heart> in Next.js"
+  }
+}

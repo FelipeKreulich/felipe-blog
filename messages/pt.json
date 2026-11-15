@@ -1,0 +1,71 @@
+{
+  "site": {
+    "tagline": "Notícias, ensaios e notas sobre tecnologia",
+    "edition": "Edição",
+    "allRights": "Todos os direitos reservados."
+  },
+  "nav": {
+    "home": "Início",
+    "signIn": "Entrar",
+    "theme": "Alternar tema",
+    "language": "Idioma"
+  },
+  "home": {
+    "latest": "Últimas",
+    "empty": "Nenhuma edição publicada ainda. Volte em breve.",
+    "readMore": "Ler artigo",
+    "minRead": "{n} min de leitura",
+    "seeMore": "Ver mais"
+  },
+  "archive": {
+    "title": "Todas as edições",
+    "kicker": "{n} artigos publicados"
+  },
+  "editor": {
+    "kicker": "Do editor",
+    "role": "Editor-chefe",
+    "portraitAlt": "Retrato de Felipe Kreulich em estilo de jornal",
+    "title": "Um jornal escrito por quem <em>ama</em> tecnologia.",
+    "intro": "Este espaço nasceu de uma vontade simples: ter um lugar meu para pensar em voz alta sobre tecnologia. Aqui você encontra três coisas:",
+    "item1": "Notícias de tecnologia que valem a leitura — filtradas, comentadas e sem pressa.",
+    "item2": "Notas dos meus estudos, compartilhadas enquanto aprendo, com erros e acertos.",
+    "item3": "Ensaios e opiniões sobre o ofício de construir software.",
+    "closing": "Tudo feito com amor e carinho pela tecnologia — e por quem, como eu, gosta de entender como as coisas funcionam. Obrigado por ler."
+  },
+  "newsletter": {
+    "kicker": "Newsletter",
+    "title": "A edição chega <em>até você</em>.",
+    "lead": "Um e-mail quando sair artigo novo. Sem spam, sem pressa — cancele quando quiser.",
+    "label": "Seu e-mail",
+    "placeholder": "seu@email.com",
+    "cta": "Assinar",
+    "privacy": "Seu e-mail não é compartilhado com ninguém.",
+    "invalid": "E-mail inválido.",
+    "already": "Você já é assinante. Obrigado!",
+    "checkInbox": "Quase lá! Confirme pelo link no seu e-mail.",
+    "sendFailed": "Não foi possível enviar agora. Tente de novo.",
+    "emailSubject": "Confirme sua assinatura — The Commit Times",
+    "emailBody": "Obrigado por assinar! Clique no botão abaixo para confirmar e começar a receber as novas edições.",
+    "emailCta": "Confirmar assinatura",
+    "emailIgnore": "Se não foi você, ignore este e-mail.",
+    "confirmedTitle": "Assinatura confirmada",
+    "confirmedBody": "Você vai receber as próximas edições no seu e-mail.",
+    "invalidTitle": "Link inválido",
+    "invalidBody": "Este link expirou ou já foi usado. Tente assinar de novo.",
+    "unsubTitle": "Assinatura cancelada",
+    "unsubBody": "Você não vai mais receber nossos e-mails. Volte quando quiser.",
+    "back": "Voltar ao início"
+  },
+  "footer": {
+    "about": "Notícias de tecnologia, notas de estudo e ensaios — escritos com carinho por quem ama entender como as coisas funcionam.",
+    "sections": "Seções",
+    "home": "Início",
+    "archive": "Todas as edições",
+    "follow": "Siga",
+    "support": "Apoie",
+    "supportBody": "Gostou do conteúdo? Um café ajuda a manter as edições saindo.",
+    "coffee": "Me pague um café",
+    "rights": "Todos os direitos reservados",
+    "printed": "Impresso com <heart></heart> em Next.js"
+  }
+}
