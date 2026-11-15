@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
 
+// Hash bcrypt real (mesmo custo) para comparar quando o e-mail não existe: tempo de resposta igual.
+let dummyHash: string | undefined;
+const getDummyHash = () => (dummyHash ??= bcrypt.hashSync(crypto.randomUUID(), 12));
+
 export const credentialsSchema = z.object({
   email: z.email().max(254).transform((e) => e.trim().toLowerCase()),
   password: z.string().min(8).max(128),
@@ -23,8 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) throw new InvalidLogin();
         const user = await db.user.findUnique({ where: { email: parsed.data.email } });
-        // compara mesmo sem usuário, para não vazar por tempo de resposta quais e-mails existem
-        const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? "$2b$12$invalidinvalidinvalidinvalidinvalidinvalidinvalidinvali");
+        const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? getDummyHash());
         if (!user || !ok) throw new InvalidLogin();
         return { id: user.id, name: user.name, email: user.email, role: user.role };
       },

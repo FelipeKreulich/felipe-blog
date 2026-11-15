@@ -67,14 +67,16 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
       )}
 
       <div className="article prose prose-lg mx-auto max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
-      <footer className="mx-auto max-w-[68ch] space-y-14 border-t pt-8 text-lg">
-        <div className="flex items-center justify-between gap-4">
+      <footer className="mx-auto mt-16 max-w-[68ch] text-lg">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-y py-6">
           <LikeButton postId={post.id} liked={liked} count={post._count.likes} signedIn={!!session?.user} />
           <a href="#comments" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
             {t("stats", { likes: post._count.likes, comments: post._count.comments })}
           </a>
         </div>
-        <Comments postId={post.id} path={`/posts/${tr.slug}`} />
+        <div className="mt-16">
+          <Comments postId={post.id} path={`/posts/${tr.slug}`} />
+        </div>
       </footer>
     </article>
   );

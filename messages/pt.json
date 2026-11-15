@@ -120,7 +120,8 @@
     "signInSuffix": "para participar da conversa.",
     "needAuth": "Entre para comentar.",
     "invalid": "Comentário inválido (1 a 2000 caracteres).",
-    "tooFast": "Calma! Aguarde um minuto antes de comentar de novo."
+    "tooFast": "Calma! Aguarde um minuto antes de comentar de novo.",
+    "removed": "[comentário removido]"
   },
   "likes": {
     "count": "{n, plural, =0 {Curtir} one {# curtida} other {# curtidas}}",

@@ -5,13 +5,14 @@ import { AuthError } from "next-auth";
 import { getLocale, getTranslations } from "next-intl/server";
 import { signIn, signOut, credentialsSchema } from "@/auth";
 import { db } from "@/lib/db";
+import { safePath } from "@/lib/safe-path";
 
 // Devolve os campos digitados para o form não perder o que o leitor escreveu (React 19 reseta o form após a action).
 export type AuthState = { error?: string; email?: string; name?: string };
 
 // Só aceita caminhos internos como destino pós-login (evita open redirect) e mantém o idioma atual.
 async function safeNext(v: FormDataEntryValue | null) {
-  const path = typeof v === "string" && v.startsWith("/") && !v.startsWith("//") ? v : "/";
+  const path = safePath(v);
   const locale = await getLocale();
   if (locale === "pt" || path === `/${locale}` || path.startsWith(`/${locale}/`)) return path;
   return path === "/" ? `/${locale}` : `/${locale}${path}`;

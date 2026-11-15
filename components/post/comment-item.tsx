@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { CommentForm } from "./comment-form";
 import { deleteComment } from "@/lib/post-actions";
 
-export type CommentView = { id: string; body: string; author: string; date: string; canDelete: boolean; replies?: CommentView[] };
+export type CommentView = { id: string; body: string; author: string; date: string; canDelete: boolean; removed?: boolean; replies?: CommentView[] };
 
 export function CommentItem({ c, postId, canReply }: { c: CommentView; postId: string; canReply: boolean }) {
   const t = useTranslations("comments");
@@ -18,9 +18,9 @@ export function CommentItem({ c, postId, canReply }: { c: CommentView; postId: s
         <span className="text-foreground">{c.author}</span>
         <span className="text-muted-foreground">{c.date}</span>
       </div>
-      <p className="whitespace-pre-line leading-relaxed">{c.body}</p>
+      <p className={`whitespace-pre-line leading-relaxed ${c.removed ? "italic text-muted-foreground" : ""}`}>{c.body}</p>
       <div className="flex gap-4">
-        {canReply && <button type="button" className={action} onClick={() => setReplying((v) => !v)}>{replying ? t("cancel") : t("reply")}</button>}
+        {canReply && !c.removed && <button type="button" className={action} onClick={() => setReplying((v) => !v)}>{replying ? t("cancel") : t("reply")}</button>}
         {c.canDelete && <button type="button" disabled={pending} className={action} onClick={() => start(() => deleteComment(c.id))}>{t("delete")}</button>}
       </div>
       {replying && <CommentForm postId={postId} parentId={c.id} autoFocus onDone={() => setReplying(false)} />}

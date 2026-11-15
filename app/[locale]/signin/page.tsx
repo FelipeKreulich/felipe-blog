@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { Link, redirect } from "@/i18n/routing";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { AuthForm } from "@/components/auth/auth-form";
+import { safePath } from "@/lib/safe-path";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/signin">): Promise<Metadata> {
   const t = await getTranslations({ locale: (await params).locale, namespace: "auth" });
@@ -14,7 +15,7 @@ export default async function Page({ params, searchParams }: PageProps<"/[locale
   const { locale } = await params;
   setRequestLocale(locale);
   const n = (await searchParams).next;
-  const next = typeof n === "string" && n.startsWith("/") && !n.startsWith("//") ? n : "/";
+  const next = safePath(n);
   if (await auth()) redirect({ href: next, locale });
   const t = await getTranslations("auth");
 

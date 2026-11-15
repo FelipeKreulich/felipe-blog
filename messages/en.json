@@ -120,7 +120,8 @@
     "signInSuffix": "to join the conversation.",
     "needAuth": "Sign in to comment.",
     "invalid": "Invalid comment (1 to 2000 characters).",
-    "tooFast": "Easy! Wait a minute before commenting again."
+    "tooFast": "Easy! Wait a minute before commenting again.",
+    "removed": "[comment removed]"
   },
   "likes": {
     "count": "{n, plural, =0 {Like} one {# like} other {# likes}}",
