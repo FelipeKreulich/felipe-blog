@@ -10,7 +10,7 @@ export async function clientIp() {
 
 // Conta uma tentativa na chave. Atômico: um único upsert com lógica de janela no SQL.
 // Retorna se ainda está dentro do limite e em quantos segundos a janela reabre.
-export async function hit(key: string, limit: number, windowSec: number): Promise<{ ok: boolean; retryAfter: number }> {
+export async function hit(key: string, limit: number, windowSec: number): Promise<{ ok: boolean; retryAfter: number; resetAt: Date }> {
   const rows = await db.$queryRaw<{ count: number; resetAt: Date }[]>`
     INSERT INTO "RateLimit" ("key", "count", "resetAt")
     VALUES (${key}, 1, NOW() + make_interval(secs => ${windowSec}))
@@ -21,14 +21,15 @@ export async function hit(key: string, limit: number, windowSec: number): Promis
   const { count, resetAt } = rows[0];
   // limpeza oportunista das janelas vencidas (~1% das chamadas)
   if (Math.random() < 0.01) db.rateLimit.deleteMany({ where: { resetAt: { lt: new Date() } } }).catch(() => {});
-  return { ok: count <= limit, retryAfter: Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / 1000)) };
+  return { ok: count <= limit, retryAfter: Math.max(0, Math.ceil((resetAt.getTime() - Date.now()) / 1000)), resetAt };
 }
 
 export const clear = (key: string) => db.rateLimit.deleteMany({ where: { key } });
 
 // Devolve uma tentativa reservada com hit() (ex.: login certo), mantendo "conta só falhas" sem corrida.
-export const release = (key: string) =>
-  db.$executeRaw`UPDATE "RateLimit" SET "count" = GREATEST("count" - 1, 0) WHERE "key" = ${key}`;
+// Só na MESMA janela da reserva: se ela virou no meio, não desconta da janela nova.
+export const release = (key: string, resetAt: Date) =>
+  db.$executeRaw`UPDATE "RateLimit" SET "count" = GREATEST("count" - 1, 0) WHERE "key" = ${key} AND "resetAt" = ${resetAt}`;
 
 export const LIMITS = {
   // falhas de login: por IP, por IP+e-mail (apertado, não trava a conta para os outros) e um teto

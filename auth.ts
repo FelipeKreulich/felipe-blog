@@ -44,13 +44,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (blocked.length) {
           // tentativa barrada não conta em nenhum contador (senão um IP já bloqueado seguiria
           // esgotando o teto da conta e travaria o dono)
-          await Promise.all(keys.map((k) => release(k.key)));
+          await Promise.all(keys.map((k, i) => release(k.key, state[i].resetAt)));
           throw new RateLimited(Math.max(...blocked.map((s) => s.retryAfter)));
         }
         const user = await db.user.findUnique({ where: { email: parsed.data.email } });
         const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? getDummyHash());
         if (!user || !ok) throw new InvalidLogin(); // a tentativa reservada fica contada
-        await Promise.all(keys.map((k) => release(k.key))); // login certo não conta
+        await Promise.all(keys.map((k, i) => release(k.key, state[i].resetAt))); // login certo não conta
         return { id: user.id, name: user.name, email: user.email, role: user.role, sessionVersion: user.sessionVersion };
       },
     }),
