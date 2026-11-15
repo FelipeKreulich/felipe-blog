@@ -176,13 +176,17 @@ export async function sendNewsletter(postId: string): Promise<AdminState> {
       from: `${site.name} <${process.env.FROM_EMAIL}>`,
       to: s.email,
       subject: t.title,
-      headers: { "List-Unsubscribe": `<${base}/newsletter/unsubscribe?token=${s.token}>` },
+      // RFC 8058: cancelamento em um clique via POST; o link no corpo leva à página com botão
+      headers: {
+        "List-Unsubscribe": `<${site.url}/api/newsletter/unsubscribe?token=${encodeURIComponent(s.token)}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
       html: `<div style="font-family:Georgia,serif;max-width:560px;margin:auto;color:#2b2a28;background:#f3eee3;padding:32px">
         <p style="font-family:monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#a8341f;margin:0">${site.name}</p>
         <h1 style="font-weight:normal;font-size:30px;line-height:1.1;margin:12px 0">${esc(t.title)}</h1>
         <p style="font-size:16px;line-height:1.6;color:#6b665c">${esc(t.excerpt)}</p>
         <p style="margin:28px 0"><a href="${base}/posts/${t.slug}" style="background:#2b2a28;color:#f3eee3;padding:12px 20px;text-decoration:none;font-family:monospace;text-transform:uppercase;font-size:12px;letter-spacing:1px">${read}</a></p>
-        <p style="font-size:12px;color:#6b665c"><a href="${base}/newsletter/unsubscribe?token=${s.token}" style="color:#6b665c">${unsub}</a></p></div>`,
+        <p style="font-size:12px;color:#6b665c"><a href="${base}/newsletter/unsubscribe?token=${encodeURIComponent(s.token)}" style="color:#6b665c">${unsub}</a></p></div>`,
     };
   });
 

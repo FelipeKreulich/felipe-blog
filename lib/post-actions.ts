@@ -8,9 +8,10 @@ import { db } from "@/lib/db";
 const POST_PAGE = "/[locale]/posts/[slug]";
 
 
-export async function toggleLike(postId: string): Promise<{ liked: boolean; count: number } | { error: "auth" }> {
+export async function toggleLike(postId: string): Promise<{ liked: boolean; count: number } | { error: "auth" | "not_found" }> {
   const user = await currentUser();
   if (!user) return { error: "auth" };
+  if (!(await publishedPost(postId))) return { error: "not_found" };
   const key = { postId_userId: { postId, userId: user.id } };
   const existing = await db.like.findUnique({ where: key });
   if (existing) await db.like.delete({ where: key });
@@ -19,6 +20,10 @@ export async function toggleLike(postId: string): Promise<{ liked: boolean; coun
   revalidatePath(POST_PAGE, "page");
   return { liked: !existing, count };
 }
+
+// Só posts existentes e publicados aceitam curtida/comentário (id ruim daria 500 pela FK; rascunho não é público).
+const publishedPost = (id: string) =>
+  db.post.findFirst({ where: { id, publishedAt: { not: null } }, select: { id: true } });
 
 export type CommentState = { error?: string; ok?: number };
 
@@ -43,6 +48,7 @@ export async function addComment(_: CommentState, form: FormData): Promise<Comme
   if (recent >= 5) return { error: t("tooFast") };
 
   const { postId, parentId, body } = parsed.data;
+  if (!(await publishedPost(postId))) return { error: t("postUnavailable") };
   if (parentId) {
     const parent = await db.comment.findUnique({ where: { id: parentId }, select: { postId: true, parentId: true } });
     if (!parent || parent.postId !== postId || parent.parentId) return { error: t("invalid") }; // só 1 nível de resposta

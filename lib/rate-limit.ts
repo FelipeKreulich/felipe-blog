@@ -31,11 +31,22 @@ export const clear = (key: string) => db.rateLimit.deleteMany({ where: { key } }
 export const release = (key: string, resetAt: Date) =>
   db.$executeRaw`UPDATE "RateLimit" SET "count" = GREATEST("count" - 1, 0) WHERE "key" = ${key} AND "resetAt" = ${resetAt}`;
 
+// Marca (ou renova) uma chave por windowSec sem contar tentativa — ex.: IP confiável após login certo.
+export const mark = (key: string, windowSec: number) =>
+  db.$executeRaw`
+    INSERT INTO "RateLimit" ("key", "count", "resetAt") VALUES (${key}, 0, NOW() + make_interval(secs => ${windowSec}))
+    ON CONFLICT ("key") DO UPDATE SET "resetAt" = NOW() + make_interval(secs => ${windowSec})`;
+
+export const isMarked = async (key: string) =>
+  (await db.rateLimit.count({ where: { key, resetAt: { gt: new Date() } } })) > 0;
+
 export const LIMITS = {
   // falhas de login: por IP, por IP+e-mail (apertado, não trava a conta para os outros) e um teto
   // alto por conta, só alcançável com ataque distribuído
   loginIp: { limit: 10, window: 15 * 60 },
   loginIpEmail: { limit: 5, window: 15 * 60 },
   loginEmail: { limit: 30, window: 60 * 60 },
+  pwReprompt: { limit: 10, window: 15 * 60 },
+  trustedIp: { window: 30 * 24 * 60 * 60 },
   signupIp: { limit: 5, window: 60 * 60 },
 } as const;

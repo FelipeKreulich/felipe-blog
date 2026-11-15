@@ -9,10 +9,24 @@ import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 import { deleteUserAccount } from "@/lib/account";
 import { subscribeEmail } from "@/lib/newsletter-core";
+import { hit, LIMITS, release } from "@/lib/rate-limit";
 
 export type ProfileState = { ok?: string; error?: string };
 
 const me = getCurrentUser;
+
+// Confere a senha atual com limite por usuário: reserva antes do bcrypt e devolve se acertar (conta só falhas).
+async function checkPassword(userId: string, password: string, hash: string, t: (k: string, v?: Record<string, number>) => string): Promise<string | null> {
+  const key = `pw:${userId}`;
+  const r = await hit(key, LIMITS.pwReprompt.limit, LIMITS.pwReprompt.window);
+  if (!r.ok) {
+    await release(key, r.resetAt); // tentativa barrada não conta
+    return t("tooManyAttempts", { minutes: Math.ceil(r.retryAfter / 60) });
+  }
+  if (!(await bcrypt.compare(password, hash))) return t("wrongPassword");
+  await release(key, r.resetAt);
+  return null;
+}
 
 export async function updateName(_: ProfileState, form: FormData): Promise<ProfileState> {
   const t = await getTranslations("profile");
@@ -40,7 +54,8 @@ export async function changePassword(_: ProfileState, form: FormData): Promise<P
     const field = parsed.error.issues[0]?.path[0];
     return { error: field === "confirm" ? t("passwordMismatch") : t("weakPassword") };
   }
-  if (!(await bcrypt.compare(parsed.data.current, user.passwordHash))) return { error: t("wrongPassword") };
+  const pwError = await checkPassword(user.id, parsed.data.current, user.passwordHash, t);
+  if (pwError) return { error: pwError };
   // Nova senha + nova versão de sessão: todos os outros aparelhos caem.
   await db.user.update({
     where: { id: user.id },
@@ -67,7 +82,8 @@ export async function uploadAvatar(_: ProfileState, form: FormData): Promise<Pro
   if (file.size > MAX_BYTES) return { error: t("fileTooBig") };
   const data = new Uint8Array(await file.arrayBuffer());
   const mime = sniff(data);
-  if (!mime) return { error: t("badFile") };
+  // Só WebP: o cliente sempre reencoda via canvas (sem EXIF/GPS); outro formato aqui é chamada direta.
+  if (mime !== "image/webp") return { error: t("badFile") };
   await db.avatar.upsert({ where: { userId: user.id }, update: { data, mime }, create: { userId: user.id, data, mime } });
   revalidatePath("/", "layout");
   return { ok: t("avatarSaved") };
@@ -89,7 +105,9 @@ export async function deleteAccount(_: ProfileState, form: FormData): Promise<Pr
   if (user.role === "ADMIN") return { error: t("adminCantDelete") };
   if (form.get("confirm") !== "on") return { error: t("confirmRequired") };
   const password = form.get("password");
-  if (typeof password !== "string" || !(await bcrypt.compare(password, user.passwordHash))) return { error: t("wrongPassword") };
+  if (typeof password !== "string" || !password) return { error: t("wrongPassword") };
+  const pwError = await checkPassword(user.id, password, user.passwordHash, t);
+  if (pwError) return { error: pwError };
 
   await deleteUserAccount(user.id);
   const locale = await getLocale();

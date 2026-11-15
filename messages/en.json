@@ -42,7 +42,6 @@
     "cta": "Subscribe",
     "privacy": "Your email is never shared with anyone.",
     "invalid": "Invalid email.",
-    "already": "You're already subscribed. Thank you!",
     "checkInbox": "Almost there! Confirm via the link in your inbox.",
     "sendFailed": "Couldn't send right now. Please try again.",
     "emailSubject": "Confirm your subscription — The Commit Times",
@@ -59,7 +58,12 @@
     "linkTitle": "Link your subscription to your account",
     "linkBody": "Confirm to manage the subscription for {email} from your profile. If you didn't request this, just ignore this page.",
     "linkCta": "Link to my account",
-    "linkDone": "Done! The subscription now shows up in your profile."
+    "linkDone": "Done! The subscription now shows up in your profile.",
+    "rateLimited": "Too many attempts. Please try again later.",
+    "confirmCta": "Confirm subscription",
+    "unsubCta": "Unsubscribe",
+    "confirmPrompt": "Click below to confirm your subscription.",
+    "unsubPrompt": "Click below to stop receiving our emails."
   },
   "footer": {
     "about": "Tech news, study notes and essays — written with care by someone who loves understanding how things work.",
@@ -134,7 +138,8 @@
     "invalid": "Invalid comment (1 to 2000 characters).",
     "tooFast": "Easy! Wait a minute before commenting again.",
     "removed": "[comment removed]",
-    "deletedUser": "Deleted account"
+    "deletedUser": "Deleted account",
+    "postUnavailable": "This post isn't available."
   },
   "likes": {
     "count": "{n, plural, =0 {Like} one {# like} other {# likes}}",
@@ -187,7 +192,8 @@
     "nlSubscribe": "Subscribe",
     "nlCancel": "Unsubscribe",
     "nlCancelled": "Subscription cancelled.",
-    "nlCheckInbox": "We sent you an email to confirm. Open the link to finish."
+    "nlCheckInbox": "We sent you an email to confirm. Open the link to finish.",
+    "tooManyAttempts": "Too many attempts. Try again in {minutes} min."
   },
   "legal": {
     "kicker": "Legal",

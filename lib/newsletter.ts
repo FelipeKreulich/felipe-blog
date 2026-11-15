@@ -24,3 +24,20 @@ export async function completeLink(token: string): Promise<{ ok: boolean }> {
   ]);
   return { ok: true };
 }
+
+// Confirmar e cancelar também só via POST (botão), pelos mesmos motivos do vínculo.
+const validToken = (t: unknown): t is string => typeof t === "string" && t.length >= 20 && t.length <= 64;
+
+export async function confirmSubscription(token: string): Promise<{ ok: boolean }> {
+  if (!validToken(token)) return { ok: false };
+  const sub = await db.subscriber.findUnique({ where: { token } });
+  if (!sub) return { ok: false };
+  if (!sub.confirmedAt) await db.subscriber.update({ where: { id: sub.id }, data: { confirmedAt: new Date() } });
+  return { ok: true };
+}
+
+export async function unsubscribe(token: string): Promise<{ ok: boolean }> {
+  if (!validToken(token)) return { ok: false };
+  const { count } = await db.subscriber.deleteMany({ where: { token } });
+  return { ok: count > 0 };
+}

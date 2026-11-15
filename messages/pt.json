@@ -42,7 +42,6 @@
     "cta": "Assinar",
     "privacy": "Seu e-mail não é compartilhado com ninguém.",
     "invalid": "E-mail inválido.",
-    "already": "Você já é assinante. Obrigado!",
     "checkInbox": "Quase lá! Confirme pelo link no seu e-mail.",
     "sendFailed": "Não foi possível enviar agora. Tente de novo.",
     "emailSubject": "Confirme sua assinatura — The Commit Times",
@@ -59,7 +58,12 @@
     "linkTitle": "Vincular assinatura à sua conta",
     "linkBody": "Confirme para gerenciar pelo seu perfil a assinatura de {email}. Se não foi você quem pediu, ignore esta página.",
     "linkCta": "Vincular à minha conta",
-    "linkDone": "Pronto! A assinatura agora aparece no seu perfil."
+    "linkDone": "Pronto! A assinatura agora aparece no seu perfil.",
+    "rateLimited": "Muitas tentativas. Tente de novo mais tarde.",
+    "confirmCta": "Confirmar assinatura",
+    "unsubCta": "Cancelar assinatura",
+    "confirmPrompt": "Clique abaixo para confirmar sua assinatura.",
+    "unsubPrompt": "Clique abaixo para deixar de receber nossos e-mails."
   },
   "footer": {
     "about": "Notícias de tecnologia, notas de estudo e ensaios — escritos com carinho por quem ama entender como as coisas funcionam.",
@@ -134,7 +138,8 @@
     "invalid": "Comentário inválido (1 a 2000 caracteres).",
     "tooFast": "Calma! Aguarde um minuto antes de comentar de novo.",
     "removed": "[comentário removido]",
-    "deletedUser": "Conta removida"
+    "deletedUser": "Conta removida",
+    "postUnavailable": "Este post não está disponível."
   },
   "likes": {
     "count": "{n, plural, =0 {Curtir} one {# curtida} other {# curtidas}}",
@@ -187,7 +192,8 @@
     "nlSubscribe": "Assinar",
     "nlCancel": "Cancelar assinatura",
     "nlCancelled": "Assinatura cancelada.",
-    "nlCheckInbox": "Enviamos um e-mail para confirmar. Abra o link para concluir."
+    "nlCheckInbox": "Enviamos um e-mail para confirmar. Abra o link para concluir.",
+    "tooManyAttempts": "Muitas tentativas. Tente de novo em {minutes} min."
   },
   "legal": {
     "kicker": "Institucional",

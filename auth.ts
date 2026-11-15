@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { clientIp, hit, LIMITS, release } from "@/lib/rate-limit";
+import { clientIp, hit, isMarked, LIMITS, mark, release } from "@/lib/rate-limit";
 
 // Hash bcrypt real (mesmo custo) para comparar quando o e-mail não existe: tempo de resposta igual.
 let dummyHash: string | undefined;
@@ -34,10 +34,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // paralelos) e devolve no login certo: na prática conta só falhas. O limite apertado é
         // por IP+e-mail, então ninguém trava a conta de outra pessoa errando a senha dela.
         const ip = await clientIp(), email = parsed.data.email;
+        // IP que já entrou nesta conta ignora o teto por conta: um ataque distribuído não tranca o dono
+        // fora (per-IP e per-IP+e-mail seguem valendo).
+        const trustedKey = `login:trusted:${ip}:${email}`;
+        const trusted = await isMarked(trustedKey);
         const keys = [
           { key: `login:ip:${ip}`, ...LIMITS.loginIp },
           { key: `login:ipemail:${ip}:${email}`, ...LIMITS.loginIpEmail },
-          { key: `login:email:${email}`, ...LIMITS.loginEmail },
+          ...(trusted ? [] : [{ key: `login:email:${email}`, ...LIMITS.loginEmail }]),
         ];
         const state = await Promise.all(keys.map((k) => hit(k.key, k.limit, k.window)));
         const blocked = state.filter((s) => !s.ok);
@@ -51,6 +55,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? getDummyHash());
         if (!user || !ok) throw new InvalidLogin(); // a tentativa reservada fica contada
         await Promise.all(keys.map((k, i) => release(k.key, state[i].resetAt))); // login certo não conta
+        await mark(trustedKey, LIMITS.trustedIp.window);
         return { id: user.id, name: user.name, email: user.email, role: user.role, sessionVersion: user.sessionVersion };
       },
     }),

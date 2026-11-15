@@ -5,6 +5,7 @@ import { Resend } from "resend";
 import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
+import { hit, clientIp } from "@/lib/rate-limit";
 
 // Núcleo da inscrição. Fica FORA de arquivos "use server" de propósito: lá, toda função exportada
 // vira endpoint chamável pelo navegador, e linkUserId não pode vir do cliente.
@@ -24,8 +25,13 @@ export async function subscribeEmail(form: FormData, linkUserId: string | null):
   if (!parsed.success) return { status: "error", message: t("invalid") };
 
   const { email } = parsed.data;
+  // limite por IP e por e-mail; mensagem genérica, não revela nada sobre o endereço
+  const [byIp, byEmail] = await Promise.all([hit(`nl:ip:${await clientIp()}`, 5, 3600), hit(`nl:email:${email}`, 3, 3600)]);
+  if (!byIp.ok || !byEmail.ok) return { status: "error", message: t("rateLimited") };
+
   const existing = await db.subscriber.findUnique({ where: { email } });
-  if (existing?.confirmedAt && !linkUserId) return { status: "ok", message: t("already") };
+  // já confirmado: mesma resposta de sempre e nenhum e-mail novo (evita enumeração)
+  if (existing?.confirmedAt && !linkUserId) return { status: "ok", message: t("checkInbox") };
 
   // Pedido de vínculo (perfil): token próprio, de uso único, que expira em 24h. Um pedido novo
   // substitui o anterior (o token velho deixa de valer). Nunca reusa o token de confirmar/cancelar.
@@ -34,7 +40,7 @@ export async function subscribeEmail(form: FormData, linkUserId: string | null):
     : {};
   const sub = existing
     ? (linkUserId ? await db.subscriber.update({ where: { id: existing.id }, data: linkData }) : existing)
-    : await db.subscriber.create({ data: { email, locale, ...linkData } });
+    : await db.subscriber.create({ data: { email, locale, token: randomBytes(24).toString("base64url"), ...linkData } });
   const base = `${site.url}${locale === "pt" ? "" : "/en"}`;
   const link = sub.linkToken && linkUserId
     ? `${base}/newsletter/link?token=${sub.linkToken}`
