@@ -2,17 +2,11 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
-import { auth } from "@/auth";
+import { getCurrentUser as currentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 
 const POST_PAGE = "/[locale]/posts/[slug]";
 
-// O JWT pode estar velho (conta apagada, papel alterado): confere o usuário no banco a cada ação.
-async function currentUser() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
-  return db.user.findUnique({ where: { id: session.user.id }, select: { id: true, role: true } });
-}
 
 export async function toggleLike(postId: string): Promise<{ liked: boolean; count: number } | { error: "auth" }> {
   const user = await currentUser();

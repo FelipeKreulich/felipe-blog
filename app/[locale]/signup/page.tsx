@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/current-user";
 import { Link, redirect } from "@/i18n/routing";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { AuthForm } from "@/components/auth/auth-form";
@@ -16,7 +16,7 @@ export default async function Page({ params, searchParams }: PageProps<"/[locale
   setRequestLocale(locale);
   const n = (await searchParams).next;
   const next = safePath(n);
-  if (await auth()) redirect({ href: next, locale });
+  if (await getCurrentUser()) redirect({ href: next, locale });
   const t = await getTranslations("auth");
 
   return (

@@ -39,6 +39,17 @@ model User {
   posts    Post[]
   comments Comment[]
   likes    Like[]
+  avatar   Avatar?
+}
+
+// Foto de perfil fora da tabela User para não carregar bytes em toda consulta de usuário.
+// ponytail: guardado no Postgres (256px WebP, ~20KB); mover para object storage se os acessos crescerem
+model Avatar {
+  userId    String   @id
+  data      Bytes
+  mime      String
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Tabelas padrão do Auth.js

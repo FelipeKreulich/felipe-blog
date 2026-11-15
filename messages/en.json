@@ -7,7 +7,8 @@
     "home": "Home",
     "signIn": "Sign in",
     "theme": "Toggle theme",
-    "language": "Language"
+    "language": "Language",
+    "profile": "Profile"
   },
   "home": {
     "latest": "Latest",
@@ -127,5 +128,37 @@
   "likes": {
     "count": "{n, plural, =0 {Like} one {# like} other {# likes}}",
     "signIn": "Sign in to like"
+  },
+  "profile": {
+    "kicker": "Reader credentials",
+    "title": "My profile",
+    "since": "Reader since {date}",
+    "photo": "Photo",
+    "details": "Details",
+    "security": "Security",
+    "name": "Name",
+    "email": "Email",
+    "save": "Save",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "photoHint": "PNG, JPG or WebP. We crop it to a square automatically.",
+    "emailNotice": "Your email can't be changed here. To change it, send a message to <mail></mail> requesting the change.",
+    "emailSubject": "Email change request — The Commit Times",
+    "needAuth": "Your session expired. Please sign in again.",
+    "invalidName": "Enter a name with 2 to 60 characters.",
+    "nameSaved": "Name updated.",
+    "weakPassword": "The new password must be 8 to 128 characters.",
+    "passwordMismatch": "Passwords don't match.",
+    "wrongPassword": "Current password is incorrect.",
+    "passwordSaved": "Password changed.",
+    "noFile": "Choose an image.",
+    "fileTooBig": "Image is too large.",
+    "badFile": "Unsupported image format.",
+    "avatarSaved": "Photo updated.",
+    "avatarRemoved": "Photo removed."
   }
 }

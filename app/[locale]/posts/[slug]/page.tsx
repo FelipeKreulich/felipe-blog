@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link, redirect } from "@/i18n/routing";
 import { getPost } from "@/lib/post";
 import { renderMarkdown } from "@/lib/markdown";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 import { LikeButton } from "@/components/post/like-button";
 import { Comments } from "@/components/post/comments";
@@ -35,10 +35,10 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
   const { tr, post } = r;
   const t = await getTranslations("post");
   const th = await getTranslations("home");
-  const session = await auth();
+  const me = await getCurrentUser();
   const [html, liked] = await Promise.all([
     renderMarkdown(tr.content),
-    session?.user ? db.like.findUnique({ where: { postId_userId: { postId: post.id, userId: session.user.id } } }).then(Boolean) : false,
+    me ? db.like.findUnique({ where: { postId_userId: { postId: post.id, userId: me.id } } }).then(Boolean) : false,
   ]);
   const date = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { dateStyle: "long" }).format(post.publishedAt!);
   const minutes = Math.max(1, Math.round(tr.content.split(/\s+/).length / 220));
@@ -69,7 +69,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
       <div className="article prose prose-lg mx-auto max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
       <footer className="mx-auto mt-16 max-w-[68ch] text-lg">
         <div className="flex flex-wrap items-center justify-between gap-4 border-y py-6">
-          <LikeButton postId={post.id} liked={liked} count={post._count.likes} signedIn={!!session?.user} />
+          <LikeButton postId={post.id} liked={liked} count={post._count.likes} signedIn={!!me} />
           <a href="#comments" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
             {t("stats", { likes: post._count.likes, comments: post._count.comments })}
           </a>

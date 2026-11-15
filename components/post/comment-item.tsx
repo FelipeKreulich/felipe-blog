@@ -3,8 +3,9 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { CommentForm } from "./comment-form";
 import { deleteComment } from "@/lib/post-actions";
+import { Avatar } from "@/components/site/avatar";
 
-export type CommentView = { id: string; body: string; author: string; date: string; canDelete: boolean; removed?: boolean; replies?: CommentView[] };
+export type CommentView = { id: string; body: string; author: string; date: string; canDelete: boolean; removed?: boolean; userId?: string; avatarAt?: number | null; replies?: CommentView[] };
 
 export function CommentItem({ c, postId, canReply }: { c: CommentView; postId: string; canReply: boolean }) {
   const t = useTranslations("comments");
@@ -14,7 +15,8 @@ export function CommentItem({ c, postId, canReply }: { c: CommentView; postId: s
 
   return (
     <li className="space-y-3">
-      <div className="flex items-baseline gap-3 font-mono text-[11px] uppercase tracking-wider">
+      <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-wider">
+        {c.userId && <Avatar userId={c.userId} name={c.author} version={c.avatarAt} size={26} />}
         <span className="text-foreground">{c.author}</span>
         <span className="text-muted-foreground">{c.date}</span>
       </div>

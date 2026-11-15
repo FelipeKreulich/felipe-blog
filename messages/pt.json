@@ -7,7 +7,8 @@
     "home": "Início",
     "signIn": "Entrar",
     "theme": "Alternar tema",
-    "language": "Idioma"
+    "language": "Idioma",
+    "profile": "Perfil"
   },
   "home": {
     "latest": "Últimas",
@@ -127,5 +128,37 @@
   "likes": {
     "count": "{n, plural, =0 {Curtir} one {# curtida} other {# curtidas}}",
     "signIn": "Entre para curtir"
+  },
+  "profile": {
+    "kicker": "Credencial de leitor",
+    "title": "Meu perfil",
+    "since": "Leitor desde {date}",
+    "photo": "Foto",
+    "details": "Dados",
+    "security": "Segurança",
+    "name": "Nome",
+    "email": "E-mail",
+    "save": "Salvar",
+    "changePassword": "Alterar senha",
+    "currentPassword": "Senha atual",
+    "newPassword": "Nova senha",
+    "confirmPassword": "Confirme a nova senha",
+    "changePhoto": "Trocar foto",
+    "removePhoto": "Remover foto",
+    "photoHint": "PNG, JPG ou WebP. Recortamos em quadrado automaticamente.",
+    "emailNotice": "O e-mail não pode ser alterado por aqui. Para trocar, envie uma mensagem para <mail></mail> solicitando a alteração.",
+    "emailSubject": "Solicitação de troca de e-mail — The Commit Times",
+    "needAuth": "Sua sessão expirou. Entre novamente.",
+    "invalidName": "Informe um nome com 2 a 60 caracteres.",
+    "nameSaved": "Nome atualizado.",
+    "weakPassword": "A nova senha precisa ter de 8 a 128 caracteres.",
+    "passwordMismatch": "As senhas não conferem.",
+    "wrongPassword": "Senha atual incorreta.",
+    "passwordSaved": "Senha alterada.",
+    "noFile": "Escolha uma imagem.",
+    "fileTooBig": "Imagem muito grande.",
+    "badFile": "Formato de imagem não suportado.",
+    "avatarSaved": "Foto atualizada.",
+    "avatarRemoved": "Foto removida."
   }
 }

@@ -1,28 +1,28 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
 import { Link } from "@/i18n/routing";
 import { CommentForm } from "./comment-form";
 import { CommentItem, type CommentView } from "./comment-item";
 
 export async function Comments({ postId, path }: { postId: string; path: string }) {
-  const [session, t, locale] = await Promise.all([auth(), getTranslations("comments"), getLocale()]);
+  const [me, t, locale] = await Promise.all([getCurrentUser(), getTranslations("comments"), getLocale()]);
   const fmt = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", { dateStyle: "medium", timeStyle: "short" });
-  const me = session?.user;
 
   const rows = await db.comment.findMany({
     where: { postId, parentId: null },
     orderBy: { createdAt: "asc" },
     include: {
-      user: { select: { name: true } },
-      replies: { orderBy: { createdAt: "asc" }, include: { user: { select: { name: true } } } },
+      user: { select: { name: true, avatar: { select: { updatedAt: true } } } },
+      replies: { orderBy: { createdAt: "asc" }, include: { user: { select: { name: true, avatar: { select: { updatedAt: true } } } } } },
     },
   });
   const view = (c: (typeof rows)[number] | (typeof rows)[number]["replies"][number]): CommentView => ({
     id: c.id, date: fmt.format(c.createdAt),
     ...(c.deletedAt
       ? { body: t("removed"), author: "—", removed: true, canDelete: false }
-      : { body: c.body, author: c.user.name ?? "—", canDelete: !!me && (me.id === c.userId || me.role === "ADMIN") }),
+      : { body: c.body, author: c.user.name ?? "—", userId: c.userId, avatarAt: c.user.avatar?.updatedAt.getTime() ?? null,
+          canDelete: !!me && (me.id === c.userId || me.role === "ADMIN") }),
   });
   const comments = rows.map((c) => ({ ...view(c), replies: c.replies.map(view) }));
   const total = comments.reduce((n, c) => n + 1 + c.replies.length, 0);
