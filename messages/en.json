@@ -100,7 +100,8 @@
     "invalidName": "Enter a name with at least 2 letters.",
     "invalidEmail": "Invalid email.",
     "emailTaken": "An account with this email already exists.",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "tooMany": "Too many attempts. Try again in {minutes, plural, one {# minute} other {# minutes}}."
   },
   "status": {
     "notFoundCode": "Error 404 · Page not found",

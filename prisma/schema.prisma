@@ -182,3 +182,13 @@ model Page {
 
   @@unique([key, locale])
 }
+
+// Limite de tentativas (janela fixa). key ex.: "login:ip:1.2.3.4", "login:email:x@y", "signup:ip:1.2.3.4"
+// ponytail: no Postgres para não depender de serviço externo; trocar por Redis/Upstash se virar gargalo
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}
