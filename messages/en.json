@@ -71,7 +71,8 @@
   "post": {
     "back": "Back",
     "by": "By",
-    "stats": "{likes, plural, =0 {No likes} one {# like} other {# likes}} · {comments, plural, =0 {no comments} one {# comment} other {# comments}}"
+    "stats": "{likes, plural, =0 {No likes} one {# like} other {# likes}} · {comments, plural, =0 {no comments} one {# comment} other {# comments}}",
+    "onlyIn": "This article is only available in Portuguese."
   },
   "auth": {
     "name": "Name",

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/current-user";
 import { db } from "@/lib/db";
+import { sniffImage as sniff } from "@/lib/image";
 
 export type ProfileState = { ok?: string; error?: string };
 
@@ -42,13 +43,6 @@ export async function changePassword(_: ProfileState, form: FormData): Promise<P
 }
 
 const MAX_BYTES = 300 * 1024;
-// Confere o tipo real pelos primeiros bytes, não pelo que o navegador declara.
-function sniff(b: Uint8Array): string | null {
-  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
-  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return "image/png";
-  if (String.fromCharCode(...b.slice(0, 4)) === "RIFF" && String.fromCharCode(...b.slice(8, 12)) === "WEBP") return "image/webp";
-  return null;
-}
 
 export async function uploadAvatar(_: ProfileState, form: FormData): Promise<ProfileState> {
   const t = await getTranslations("profile");

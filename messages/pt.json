@@ -71,7 +71,8 @@
   "post": {
     "back": "Voltar",
     "by": "Por",
-    "stats": "{likes, plural, =0 {Nenhuma curtida} one {# curtida} other {# curtidas}} · {comments, plural, =0 {nenhum comentário} one {# comentário} other {# comentários}}"
+    "stats": "{likes, plural, =0 {Nenhuma curtida} one {# curtida} other {# curtidas}} · {comments, plural, =0 {nenhum comentário} one {# comentário} other {# comentários}}",
+    "onlyIn": "Este artigo está disponível apenas em inglês."
   },
   "auth": {
     "name": "Nome",

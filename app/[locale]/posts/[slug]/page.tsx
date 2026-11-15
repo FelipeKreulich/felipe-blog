@@ -17,7 +17,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/posts/[s
   const { locale, slug } = await params;
   const r = await getPost(locale, slug);
   if (!r || !("tr" in r) || !r.tr) return {};
+  const canonical = r.fallbackLocale ? `${r.fallbackLocale === "pt" ? "" : "/en"}/posts/${r.tr.slug}` : undefined;
   return {
+    alternates: canonical ? { canonical } : undefined,
     title: r.tr.title,
     description: r.tr.excerpt,
     openGraph: { type: "article", title: r.tr.title, description: r.tr.excerpt, images: r.post.coverImage ? [r.post.coverImage] : [] },
@@ -32,7 +34,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
   if ("redirectSlug" in r && r.redirectSlug) redirect({ href: `/posts/${r.redirectSlug}`, locale });
   if (!("tr" in r) || !r.tr) notFound();
 
-  const { tr, post } = r;
+  const { tr, post, fallbackLocale } = r;
   const t = await getTranslations("post");
   const th = await getTranslations("home");
   const me = await getCurrentUser();
@@ -49,7 +51,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
         <ArrowLeft className="size-3.5" /> {t("back")}
       </Link>
 
-      <header className="mx-auto max-w-3xl space-y-6 text-center">
+      {fallbackLocale && (
+        <p lang={locale} className="mx-auto max-w-3xl border-l-2 border-accent bg-card p-4 text-sm">{t("onlyIn")}</p>
+      )}
+
+      <header lang={fallbackLocale ?? undefined} className="mx-auto max-w-3xl space-y-6 text-center">
         <div className="flex flex-wrap justify-center gap-3 font-mono text-[11px] uppercase tracking-wider text-accent">
           {post.tags.map((tag) => <span key={tag.id}>{locale === "pt" ? tag.namePt : tag.nameEn}</span>)}
         </div>
@@ -66,7 +72,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/posts/[s
         </div>
       )}
 
-      <div className="article prose prose-lg mx-auto max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
+      <div lang={fallbackLocale ?? undefined} className="article prose prose-lg mx-auto max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
       <footer className="mx-auto mt-16 max-w-[68ch] text-lg">
         <div className="flex flex-wrap items-center justify-between gap-4 border-y py-6">
           <LikeButton postId={post.id} liked={liked} count={post._count.likes} signedIn={!!me} />
