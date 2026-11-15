@@ -8,7 +8,7 @@ import { signIn, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { sniffImage as sniff } from "@/lib/image";
 import { deleteUserAccount } from "@/lib/account";
-import { subscribeEmail } from "@/lib/newsletter";
+import { subscribeEmail } from "@/lib/newsletter-core";
 
 export type ProfileState = { ok?: string; error?: string };
 

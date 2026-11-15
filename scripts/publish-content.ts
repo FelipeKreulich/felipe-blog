@@ -5,7 +5,7 @@
 //   npm run content:publish                 # cria o que falta
 //   npm run content:publish -- --update     # também atualiza posts existentes
 //   CONTENT_AUTHOR_EMAIL=voce@x.com ...      # autor dos posts (padrão: primeiro admin com senha)
-import { PrismaClient } from "../lib/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { allPosts } from "../content/index";
 import { legal } from "../content/legal";
 import { TAGS } from "../content/types";

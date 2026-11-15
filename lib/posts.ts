@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
-import type { Locale } from "@/lib/generated/prisma/enums";
+import type { Locale } from "@prisma/client";
 
 export type PostCard = {
   id: string; href: string; cover: string | null; title: string; excerpt: string; meta: string; tag: string | null;

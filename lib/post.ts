@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { db } from "@/lib/db";
-import type { Locale } from "@/lib/generated/prisma/enums";
+import type { Locale } from "@prisma/client";
 
 // Post publicado por slug no idioma.
 // - slug de outro idioma e existe tradução aqui -> { redirectSlug } (troca de URL dentro do mesmo idioma)

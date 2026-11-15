@@ -2,7 +2,7 @@
 // Uso: npm run admin:create -- voce@email.com
 import bcrypt from "bcryptjs";
 import { createInterface } from "node:readline";
-import { PrismaClient } from "../lib/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 function askHidden(q: string): Promise<string> {
   return new Promise((resolve) => {

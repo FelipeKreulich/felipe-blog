@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import type { Locale } from "@/lib/generated/prisma/enums";
+import type { Locale } from "@prisma/client";
 
 export const PAGE_KEYS = ["terms", "privacy"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];

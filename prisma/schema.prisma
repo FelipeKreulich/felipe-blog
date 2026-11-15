@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider      = "prisma-client"
-  output        = "../lib/generated/prisma"
-  // native = máquina local; rhel-openssl-3.0.x = runtime das funções da Vercel
+  // gerador padrão (node_modules/.prisma/client): a Vercel/Next empacotam o query engine sozinhos.
+  // Um client em pasta própria fazia o engine não ser encontrado nas funções serverless.
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
