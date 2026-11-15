@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { clear, clientIp, hit, LIMITS } from "@/lib/rate-limit";
+import { clear, clientIp, hit, LIMITS, peek } from "@/lib/rate-limit";
 
 // Hash bcrypt real (mesmo custo) para comparar quando o e-mail não existe: tempo de resposta igual.
 let dummyHash: string | undefined;
@@ -30,17 +30,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) throw new InvalidLogin();
-        // Limite por IP (força bruta em várias contas) e por e-mail (força bruta numa conta).
-        const ipKey = `login:ip:${await clientIp()}`, emailKey = `login:email:${parsed.data.email}`;
-        const [byIp, byEmail] = await Promise.all([
-          hit(ipKey, LIMITS.loginIp.limit, LIMITS.loginIp.window),
-          hit(emailKey, LIMITS.loginEmail.limit, LIMITS.loginEmail.window),
-        ]);
-        if (!byIp.ok || !byEmail.ok) throw new RateLimited(Math.max(byIp.ok ? 0 : byIp.retryAfter, byEmail.ok ? 0 : byEmail.retryAfter));
+        // Conta só FALHAS (consulta antes, incrementa depois da senha errada). O limite apertado é
+        // por IP+e-mail, então ninguém trava a conta de outra pessoa errando a senha dela.
+        const ip = await clientIp(), email = parsed.data.email;
+        const keys = [
+          { key: `login:ip:${ip}`, ...LIMITS.loginIp },
+          { key: `login:ipemail:${ip}:${email}`, ...LIMITS.loginIpEmail },
+          { key: `login:email:${email}`, ...LIMITS.loginEmail },
+        ];
+        const state = await Promise.all(keys.map((k) => peek(k.key, k.limit)));
+        const blocked = state.filter((s) => !s.ok);
+        if (blocked.length) throw new RateLimited(Math.max(...blocked.map((s) => s.retryAfter)));
         const user = await db.user.findUnique({ where: { email: parsed.data.email } });
         const ok = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? getDummyHash());
-        if (!user || !ok) throw new InvalidLogin();
-        await clear(emailKey); // login certo zera o contador da conta (não o do IP)
+        if (!user || !ok) {
+          await Promise.all(keys.map((k) => hit(k.key, k.limit, k.window)));
+          throw new InvalidLogin();
+        }
+        await clear(keys[1].key); // login certo zera o contador deste IP+conta
         return { id: user.id, name: user.name, email: user.email, role: user.role, sessionVersion: user.sessionVersion };
       },
     }),

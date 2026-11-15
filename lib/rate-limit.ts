@@ -1,10 +1,11 @@
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 
-// IP do cliente atrás do proxy da Vercel (primeiro valor de x-forwarded-for).
+// IP do cliente. Na Vercel, x-real-ip / x-vercel-forwarded-for são definidos pela própria plataforma
+// (o cliente não consegue forjar); x-forwarded-for fica como fallback para outros ambientes.
 export async function clientIp() {
   const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
+  return (h.get("x-vercel-forwarded-for") ?? h.get("x-real-ip") ?? h.get("x-forwarded-for"))?.split(",")[0]?.trim() || "unknown";
 }
 
 // Conta uma tentativa na chave. Atômico: um único upsert com lógica de janela no SQL.
@@ -25,8 +26,18 @@ export async function hit(key: string, limit: number, windowSec: number): Promis
 
 export const clear = (key: string) => db.rateLimit.deleteMany({ where: { key } });
 
+// Só consulta (não incrementa): permite contar apenas falhas.
+export async function peek(key: string, limit: number): Promise<{ ok: boolean; retryAfter: number }> {
+  const r = await db.rateLimit.findUnique({ where: { key } });
+  if (!r || r.resetAt < new Date()) return { ok: true, retryAfter: 0 };
+  return { ok: r.count < limit, retryAfter: Math.ceil((r.resetAt.getTime() - Date.now()) / 1000) };
+}
+
 export const LIMITS = {
+  // falhas de login: por IP, por IP+e-mail (apertado, não trava a conta para os outros) e um teto
+  // alto por conta, só alcançável com ataque distribuído
   loginIp: { limit: 10, window: 15 * 60 },
-  loginEmail: { limit: 5, window: 15 * 60 },
+  loginIpEmail: { limit: 5, window: 15 * 60 },
+  loginEmail: { limit: 30, window: 60 * 60 },
   signupIp: { limit: 5, window: 60 * 60 },
 } as const;
