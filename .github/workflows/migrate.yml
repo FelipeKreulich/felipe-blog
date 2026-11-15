@@ -1,0 +1,32 @@
+# Aplica as migrations do Prisma no banco do ambiente certo, conforme o branch que recebeu o push.
+#   master  -> GitHub Environment "production"  (Neon branch "production")
+#   develop -> GitHub Environment "development" (Neon branch "development")
+# Em cada Environment (Settings → Environments), crie o secret DATABASE_URL com a string
+# de conexão DIRETA (sem "-pooler" no host): o lock de migration não funciona pelo pooler.
+name: Migrate database
+
+on:
+  push:
+    branches: [master, develop]
+    paths: ["prisma/**", ".github/workflows/migrate.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: migrate-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'master' && 'production' || 'development' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: prisma migrate deploy
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
