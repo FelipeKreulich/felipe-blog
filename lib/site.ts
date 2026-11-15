@@ -3,6 +3,6 @@ export const site = {
   name: "The Commit Times",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   github: "https://github.com/FelipeKreulich",
-  linkedin: "", // TODO: cole o link do LinkedIn (vazio = escondido)
+  linkedin: "https://www.linkedin.com/in/felipe-kreulich",
   buyMeACoffee: "https://buymeacoffee.com/felipekreulich",
 };
