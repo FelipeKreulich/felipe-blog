@@ -49,9 +49,9 @@ Para o bolso, há uma caixa de tokens com projeção mensal e limite de gasto po
 
 Nem tudo foi tranquilo, e o AXION ainda está em evolução. Uso ele no meu dia a dia, e é justamente por isso que os problemas aparecem rápido.
 
-- **Desempenho.** No modo de desenvolvimento, [PREENCHER: o que ficava lento e o que você mudou]. Terminais são pesados: precisei agrupar a saída no servidor, trocar consultas repetidas por um único canal de eventos e desmontar os terminais quando o canvas está afastado.
+- **Desempenho.** Terminais são pesados, e com vários abertos a interface sentia. Precisei agrupar a saída no servidor, trocar consultas repetidas por um único canal de eventos e desmontar os terminais quando o canvas está afastado.
 - **Estabilidade.** Uma mensagem digitada num terminal parece simples até não chegar. Tive de garantir que cada mensagem enviada a um agente é realmente submetida, com fila por agente e nova tentativa até ele reagir.
-- **Testes de interface.** Testar algo que depende de agentes de verdade é caro e imprevisível. A saída foi um teste de ponta a ponta com um servidor real e um agente falso, que confere mensagens, aprovações, GitHub e floors sem gastar um token. [PREENCHER: algum erro marcante que esse teste pegou, se quiser contar]
+- **Testes de interface.** Testar algo que depende de agentes de verdade é caro e imprevisível. A saída foi um teste de ponta a ponta com um servidor real e um agente falso, que confere mensagens, aprovações, GitHub e floors sem gastar um token.
 
 Uma funcionalidade que nasceu dessas dores são os floors: branches git isolados para que vários agentes trabalhem em paralelo sem pisar no código um do outro. Outra é a retomada de contexto: o AXION guarda um resumo por agente e o entrega quando ele reinicia sem conseguir retomar a conversa.
 
@@ -69,7 +69,7 @@ No que estou construindo agora, e que ainda não está pronto:
 
 ## Quer acompanhar?
 
-O AXION é licenciado sob MIT, tem interface em português e mais 11 idiomas e funciona no celular e no tablet, com tema claro e escuro. O projeto está em [PREENCHER: link do repositório ou página, se for público]. Se você também vive alternando entre terminais de agentes, me conte como é o seu fluxo: é desse tipo de conversa que saem as próximas versões.`,
+O AXION é licenciado sob MIT, tem interface em português e mais 11 idiomas e funciona no celular e no tablet, com tema claro e escuro. Por enquanto o código ainda é privado. Se você também vive alternando entre terminais de agentes, me conte como é o seu fluxo: é desse tipo de conversa que saem as próximas versões.`,
     },
     en: {
       slug: "axion-an-office-for-my-team-of-ai-agents",
@@ -113,9 +113,9 @@ For the wallet, there is a token box with a monthly projection and spending limi
 
 Not everything went smoothly, and AXION is still evolving. I use it every day, which is exactly why problems show up fast.
 
-- **Performance.** In development mode, [FILL IN: what was slow and what you changed]. Terminals are heavy: I had to batch output on the server, replace repeated polling with a single event channel and unmount terminals when the canvas is zoomed out.
+- **Performance.** Terminals are heavy, and with several open the interface felt it. I had to batch output on the server, replace repeated polling with a single event channel and unmount terminals when the canvas is zoomed out.
 - **Stability.** A message typed into a terminal seems simple until it doesn't arrive. I had to make sure every message sent to an agent is actually submitted, with a per-agent queue and retries until the agent reacts.
-- **UI tests.** Testing something that depends on real agents is expensive and unpredictable. The answer was an end-to-end test with a real server and a fake agent, which checks messaging, approvals, GitHub and floors without spending a single token. [FILL IN: a memorable bug this test caught, if you want to tell it]
+- **UI tests.** Testing something that depends on real agents is expensive and unpredictable. The answer was an end-to-end test with a real server and a fake agent, which checks messaging, approvals, GitHub and floors without spending a single token.
 
 One feature born from these pains is floors: isolated git branches so several agents can work in parallel without stepping on each other's code. Another is context recovery: AXION keeps a summary per agent and hands it over when the agent restarts and can't resume its conversation.
 
@@ -133,7 +133,7 @@ What I'm building right now, and is not ready yet:
 
 ## Want to follow along?
 
-AXION is MIT licensed, has an interface in Portuguese plus 11 other languages, and works on phones and tablets, with light and dark themes. The project lives at [FILL IN: repository or page link, if public]. If you also spend your days switching between agent terminals, tell me about your workflow: that kind of conversation is where the next versions come from.`,
+AXION is MIT licensed, has an interface in Portuguese plus 11 other languages, and works on phones and tablets, with light and dark themes. For now, the code is still private. If you also spend your days switching between agent terminals, tell me about your workflow: that kind of conversation is where the next versions come from.`,
     },
   },
 ];
